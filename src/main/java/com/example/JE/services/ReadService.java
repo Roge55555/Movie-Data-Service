@@ -1,30 +1,26 @@
 package com.example.JE.services;
 
+import com.example.JE.MyConnection;
 import com.example.JE.dao.Countries;
 import com.example.JE.dao.Films;
 import com.example.JE.dao.Genres;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReadService {
     public static Films getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
-        String userName = "kpuser";
-        String password = "kpuser";
-        String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
-        Class.forName("com.mysql.jdbc.Driver");
-        try(Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
-            Statement statement = connection.createStatement()) {
-            System.out.println("connected");
 
-            ResultSet rsf = statement.executeQuery("select * from  films where id = " + getIndex);
-            rsf.next();
+        Connection connection = new MyConnection().getConnection();
+        PreparedStatement getFST = connection.prepareStatement("select * from  films where id = ?");
+        getFST.setInt(1, getIndex.intValue());
+        ResultSet rsf = getFST.executeQuery();
 
+        if(rsf.next()) {
             Films film = new Films();
             film.setFilmId((long) rsf.getInt("id"));
             film.setNameRu(rsf.getString("name_ru"));
@@ -37,19 +33,31 @@ public class ReadService {
             film.setPosterUrlPreview(rsf.getString("poster_url_preview"));
 
             List<Countries> countries = new ArrayList<>();
-            ResultSet rsc = statement.executeQuery("select name from countries where id in (select country_id from  film_countries where film_id = " + getIndex + ")");
+            PreparedStatement getFCST = connection.prepareStatement("select name from countries where id in (select country_id from  film_countries where film_id = ?)");
+            getFCST.setInt(1, getIndex.intValue());
+            ResultSet rsc = getFCST.executeQuery();
             while (rsc.next())
                 countries.add(new Countries(rsc.getString("name")));
             film.setCountries(countries);
 
             List<Genres> genres = new ArrayList<>();
-            ResultSet rsg = statement.executeQuery("select name from genres where id in (select genre_id from  film_genres where film_id = " + getIndex + ")");
+            PreparedStatement getFGST = connection.prepareStatement("select name from genres where id in (select genre_id from  film_genres where film_id = ?)");
+            getFGST.setInt(1, getIndex.intValue());
+            ResultSet rsg = getFGST.executeQuery();
             while (rsg.next())
                 genres.add(new Genres(rsg.getString("name")));
             film.setGenres(genres);
 
-            return film;
+            connection.close();
 
+            return film;
+        }
+        else {
+            System.out.println("No such film - " + getIndex);
+
+            connection.close();
+
+            return null;
         }
     }
 }

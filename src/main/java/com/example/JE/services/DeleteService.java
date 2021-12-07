@@ -1,22 +1,36 @@
 package com.example.JE.services;
 
+import com.example.JE.MyConnection;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DeleteService {
     public static void deleting(Long delIndex) throws ClassNotFoundException, SQLException {
-        String userName = "kpuser";
-        String password = "kpuser";
-        String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
-        Class.forName("com.mysql.jdbc.Driver");
-        try(Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
-            Statement statement = connection.createStatement()) {
-            System.out.println("connected");
-            statement.executeUpdate("delete from film_countries where film_id = " + delIndex);
-            statement.executeUpdate("delete from film_genres where film_id = " + delIndex);
-            statement.executeUpdate("delete from films where id = " + delIndex);
-        }
+
+        Connection connection = new MyConnection().getConnection();
+        connection.setAutoCommit(false);
+        PreparedStatement delFC = connection.prepareStatement("delete from film_countries where film_id = ?");
+        PreparedStatement delFG = connection.prepareStatement("delete from film_genres where film_id = ?");
+        PreparedStatement delF = connection.prepareStatement("delete from films where id = ?");
+
+        delFC.setInt(1, delIndex.intValue());
+        delFG.setInt(1, delIndex.intValue());
+        delF.setInt(1, delIndex.intValue());
+
+        delFC.addBatch();
+        delFG.addBatch();
+        delF.addBatch();
+
+        delFC.executeBatch();
+        delFG.executeBatch();
+        delF.executeBatch();
+
+        connection.commit();
+        connection.close();
+
+
+
     }
 }

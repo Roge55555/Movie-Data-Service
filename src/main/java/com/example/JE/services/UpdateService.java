@@ -1,60 +1,70 @@
 package com.example.JE.services;
 
-import com.example.JE.Utils;
+import com.example.JE.MyConnection;
+import com.example.JE.dao.Countries;
 import com.example.JE.dao.Films;
+import com.example.JE.dao.Genres;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class UpdateService {
     public static void updateFilm(Films film) throws ClassNotFoundException, SQLException {
-        String userName = "kpuser";
-        String password = "kpuser";
-        String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
-        Class.forName("com.mysql.jdbc.Driver");
-        try(Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
-            Statement statement = connection.createStatement()) {
-            System.out.println("connected");
+        Connection connection = new MyConnection().getConnection();
+        connection.setAutoCommit(false);
+        PreparedStatement checkST = connection.prepareStatement("select name_en from films where id = ?");
+        PreparedStatement updateFilmST = connection.prepareStatement("update films set name_ru = ?, name_en = ?, year = ?, length = ?, rating = ?, rating_vote_count = ?, poster_url = ?, poster_url_preview = ? where id = ?");
+        PreparedStatement updateFilmCountriesST = connection.prepareStatement("insert into film_countries(film_id, country_id) values (?, (select id from countries where name = ?))");
+        PreparedStatement updateFilmGenresST = connection.prepareStatement("insert into film_genres(film_id, genre_id) values (?, (select id from genres where name = ?))");
 
-            ResultSet rsf = statement.executeQuery("select name_en from films where id = " + film.getFilmId());
+        checkST.setInt(1, film.getFilmId().intValue());
+        ResultSet rsf = checkST.executeQuery();
 
-            if (!rsf.next()) {
-                System.out.println("No film with id: " + film.getFilmId());
-            } else {
+        if (rsf.next()) {
 
-                statement.executeUpdate("update films set name_ru = '" + Utils.doublingApostrophe(film.getNameRu()) + "', name_en = '" + Utils.doublingApostrophe(film.getNameEn()) + "', " +
-                        "year = '" + film.getYear() + "', length = '" + film.getFilmLength() +"', rating = '" + film.getRating() + "', rating_vote_count = " + film.getRatingVoteCount() + ", " +
-                                "poster_url = '" + film.getPosterUrl() + "', poster_url_preview = '" + film.getPosterUrlPreview() + "' where id = " + film.getFilmId());
+            updateFilmST.setInt(9, film.getFilmId().intValue());
+            updateFilmST.setString(1, film.getNameRu());
+            updateFilmST.setString(2, film.getNameEn());
+            updateFilmST.setString(3, film.getYear());
+            updateFilmST.setString(4, film.getFilmLength());
+            updateFilmST.setString(5, film.getRating());
+            updateFilmST.setInt(6, film.getRatingVoteCount().intValue());
+            updateFilmST.setString(7, film.getPosterUrl());
+            updateFilmST.setString(8, film.getPosterUrlPreview());
+            System.out.println("update");
+            updateFilmST.addBatch();
 
-                statement.executeUpdate("delete from film_countries where film_id = " + film.getFilmId());
-                for (int j = 0; j < film.getCountries().size(); j++) { // todo цикл для проверки и если нет, записи страны
-                    ResultSet rsc = statement.executeQuery("select id from countries where name = '" + film.getCountries().get(j).getCountry() + "'");
-                    if (rsc.next()) {
-                        statement.executeUpdate("insert into film_countries(film_id, country_id) values (" + film.getFilmId() + ", " + rsc.getInt("id") + ")");
-                    } else {
-                        statement.executeUpdate("insert into countries(name) values ('" + film.getCountries().get(j).getCountry() + "')");
-                        ResultSet rsc1 = statement.executeQuery("select id from countries where name = '" + film.getCountries().get(j).getCountry() + "'");
-                        rsc1.next();
-                        statement.executeUpdate("insert into film_countries(film_id, country_id) values (" + film.getFilmId() + ", " + rsc1.getInt("id") + ")");
-                    }
-                }
 
-                statement.executeUpdate("delete from film_genres where film_id = " + film.getFilmId());
-                for (int j = 0; j < film.getGenres().size(); j++) { // todo цикл для проверки и если нет, записи жанра
-                    ResultSet rsg = statement.executeQuery("select id from genres where name = '" + film.getGenres().get(j).getGenre() + "'");
-                    if (rsg.next()) {
-                        statement.executeUpdate("insert into film_genres(film_id, genre_id) values (" + film.getFilmId() + ", " + rsg.getInt("id") + ")");
-                    } else {
-                        statement.executeUpdate("insert into genres(name) values ('" + film.getGenres().get(j).getGenre() + "')");
-                        ResultSet rsg1 = statement.executeQuery("select id from genres where name = '" + film.getGenres().get(j).getGenre() + "'");
-                        rsg1.next();
-                        statement.executeUpdate("insert into film_genres(film_id, genre_id) values (" + film.getFilmId() + ", " + rsg1.getInt("id") + ")");
-                    }
-                }
+
+            updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + film.getFilmId().intValue());
+
+            for (int j = 0; j < film.getCountries().size(); j++) { // todo цикл для проверки и если нет, записи страны
+                Countries country = new Countries(film.getCountries().get(j).getCountry());
+                updateFilmCountriesST.setInt(1, film.getFilmId().intValue());
+                updateFilmCountriesST.setString(2, country.getCountry());
+                updateFilmCountriesST.addBatch();
             }
+
+            updateFilmCountriesST.addBatch("delete from film_genres where film_id = " + film.getFilmId().intValue());
+
+            for (int j = 0; j < film.getGenres().size(); j++) { // todo цикл для проверки и если нет, записи жанра
+                Genres genre = new Genres(film.getGenres().get(j).getGenre());
+                updateFilmGenresST.setInt(1, film.getFilmId().intValue());
+                updateFilmGenresST.setString(2, genre.getGenre());
+                updateFilmGenresST.addBatch();
+            }
+
+        } else {
+            System.out.println("No film with id: " + film.getFilmId());
         }
+        updateFilmST.executeBatch();
+        updateFilmCountriesST.executeBatch();
+        updateFilmGenresST.executeBatch();
+
+
+        connection.commit();
+        connection.close();
     }
 }
