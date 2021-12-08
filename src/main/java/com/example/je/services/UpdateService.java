@@ -1,9 +1,9 @@
-package com.example.JE.services;
+package com.example.je.services;
 
-import com.example.JE.MyConnection;
-import com.example.JE.dao.Countries;
-import com.example.JE.dao.Films;
-import com.example.JE.dao.Genres;
+import com.example.je.MyConnection;
+import com.example.je.dao.Countries;
+import com.example.je.dao.Films;
+import com.example.je.dao.Genres;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

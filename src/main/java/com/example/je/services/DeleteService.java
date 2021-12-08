@@ -1,6 +1,6 @@
-package com.example.JE.services;
+package com.example.je.services;
 
-import com.example.JE.MyConnection;
+import com.example.je.MyConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

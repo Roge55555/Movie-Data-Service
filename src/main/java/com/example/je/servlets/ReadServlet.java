@@ -1,9 +1,8 @@
-package com.example.JE.servlets;
+package com.example.je.servlets;
 
-import com.example.JE.services.ReadService;
+import com.example.je.services.ReadService;
 import com.google.gson.Gson;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

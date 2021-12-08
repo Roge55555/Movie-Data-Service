@@ -1,4 +1,4 @@
-package com.example.JE;
+package com.example.je;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

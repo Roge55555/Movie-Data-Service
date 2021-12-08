@@ -1,15 +1,12 @@
-package com.example.JE.servlets;
+package com.example.je.servlets;
 
-import com.example.JE.services.DeleteService;
+import com.example.je.services.DeleteService;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 

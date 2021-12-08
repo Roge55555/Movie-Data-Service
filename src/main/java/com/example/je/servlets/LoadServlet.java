@@ -1,7 +1,7 @@
-package com.example.JE.servlets;
+package com.example.je.servlets;
 
-import com.example.JE.dao.Pages;
-import com.example.JE.services.LoadService;
+import com.example.je.dao.Pages;
+import com.example.je.services.LoadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.annotation.WebServlet;
