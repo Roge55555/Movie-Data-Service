@@ -6,9 +6,11 @@ import java.sql.SQLException;
 
 public class MyConnection {
 
-    String userName = "kpuser";
-    String password = "kpuser";
-    String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
+    private static MyConnection connection = null;
+
+    private final String userName = "kpuser";
+    private final String password = "kpuser";
+    private final String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
 
     public MyConnection() {
         try {

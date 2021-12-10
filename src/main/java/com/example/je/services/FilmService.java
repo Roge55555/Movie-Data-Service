@@ -23,7 +23,7 @@ public class FilmService {
 
     public static void addFilm(Films film) throws ClassNotFoundException, SQLException {
 
-        Connection connection = new MyConnection().getConnection();
+        Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
         PreparedStatement checkST = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
         PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
