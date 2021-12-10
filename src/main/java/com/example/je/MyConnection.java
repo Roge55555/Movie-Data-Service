@@ -11,14 +11,20 @@ public class MyConnection {
     String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
 
     public MyConnection() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
+    public static Connection getConnection() throws SQLException {
 
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
-        System.out.println("connected");
+        if(connection == null) {
+            connection = new MyConnection();
+            System.out.println("connected");
+        }
 
-        return connection;
+            return DriverManager.getConnection(connection.connectionUrl, connection.userName, connection.password);
     }
 }

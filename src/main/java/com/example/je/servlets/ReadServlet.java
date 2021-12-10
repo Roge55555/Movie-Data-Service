@@ -1,6 +1,6 @@
 package com.example.je.servlets;
 
-import com.example.je.services.ReadService;
+import com.example.je.services.FilmService;
 import com.google.gson.Gson;
 
 import javax.servlet.annotation.WebServlet;
@@ -20,7 +20,7 @@ public class ReadServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         try {
-            String filmJsonString = new Gson().toJson(ReadService.getFilm(getId));
+            String filmJsonString = new Gson().toJson(FilmService.getFilm(getId));
             resp.getWriter().write(filmJsonString);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

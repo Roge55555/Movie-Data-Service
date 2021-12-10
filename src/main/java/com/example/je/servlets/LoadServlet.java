@@ -1,7 +1,7 @@
 package com.example.je.servlets;
 
 import com.example.je.dao.Pages;
-import com.example.je.services.LoadService;
+import com.example.je.services.FilmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.annotation.WebServlet;
@@ -42,7 +42,7 @@ public class LoadServlet extends HttpServlet {
         pages.setFilms(pages.getFilms().stream().distinct().collect(Collectors.toList()));
 
         try {
-            LoadService.loadData(pages);
+            FilmService.loadFilms(pages.getFilms());
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
