@@ -3,5 +3,44 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-
+    <servlet>
+        <servlet-name>LoadServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.LoadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoadServlet</servlet-name>
+        <url-pattern>/load</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>CreateServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.CreateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateServlet</servlet-name>
+        <url-pattern>/newFilm</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>getServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.ReadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getServlet</servlet-name>
+        <url-pattern>/get</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>updateServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.UpdateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>updateServlet</servlet-name>
+        <url-pattern>/update</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>deleteServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.DeleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteServlet</servlet-name>
+        <url-pattern>/delete</url-pattern>
+    </servlet-mapping>
 </web-app>

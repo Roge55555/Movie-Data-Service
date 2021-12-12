@@ -3,7 +3,6 @@ package com.example.je.servlets;
 import com.example.je.services.FilmService;
 import com.google.gson.Gson;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-@WebServlet(name = "getServlet", value = "/get")
 public class ReadServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -4,7 +4,6 @@ import com.example.je.dao.Pages;
 import com.example.je.services.FilmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-@WebServlet(name = "loadServlet", value = "/load")
 public class LoadServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int page = 0;
@@ -46,6 +44,7 @@ public class LoadServlet extends HttpServlet {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+
 
     }
 }
