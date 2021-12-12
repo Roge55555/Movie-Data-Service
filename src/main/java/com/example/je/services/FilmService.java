@@ -50,19 +50,15 @@ public class FilmService {
                 addFilmST.setString(9, film.getPosterUrlPreview());
                 addFilmST.addBatch();
 
+                addFilmST.executeBatch();
+                connection.commit();
 
+                // todo записи стран
+                CountryService.add(film.getCountries(), film.getFilmId().intValue());
 
+                // todo цикл для жанра
+                GenreService.add(film.getGenres(), film.getFilmId().intValue());
         }
-
-        addFilmST.executeBatch();
-        connection.commit();
-
-
-        // todo записи стран
-        CountryService.add(film.getCountries(), film.getFilmId().intValue());
-
-        // todo цикл для жанра
-        GenreService.add(film.getGenres(), film.getFilmId().intValue());
 
         connection.close();
     }
