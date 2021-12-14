@@ -11,32 +11,44 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class FilmService {
-    public static void loadFilms(List<Films> films) throws ClassNotFoundException, SQLException {
 
-        for(Films film : films) { //todo цикл записи по 1 фильму фильмов
+    public static void saveFilms(List<Films> films) throws ClassNotFoundException, SQLException {
 
-            addFilm(film);
-
-        }
-
-    }
-
-    public static void addFilm(Films film) throws ClassNotFoundException, SQLException {
+        CountryService.init();
+        GenreService.init();
 
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
         PreparedStatement checkST = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
         PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
+        PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM);
 
+        for(Films film : films) { //todo цикл записи по 1 фильму фильмов
 
-
-        checkST.setString(1, film.getNameEn());
-        checkST.setString(2, film.getNameRu());
-        checkST.setInt(3, film.getFilmId().intValue());
-        ResultSet rsf = checkST.executeQuery();
+            checkST.setString(1, film.getNameEn());
+            checkST.setString(2, film.getNameRu());
+            checkST.setInt(3, film.getFilmId().intValue());
+            ResultSet rsf = checkST.executeQuery();
 
             if (rsf.next()) {
-                System.out.println("Already exist film: " + film.getFilmId() + "/" + film.getNameEn() + "/" + film.getNameRu());
+                updateFilmST.setInt(9, film.getFilmId().intValue());
+                updateFilmST.setString(1, film.getNameRu());
+                updateFilmST.setString(2, film.getNameEn());
+                updateFilmST.setString(3, film.getYear());
+                updateFilmST.setString(4, film.getFilmLength());
+                updateFilmST.setString(5, film.getRating());
+                updateFilmST.setInt(6, film.getRatingVoteCount().intValue());
+                updateFilmST.setString(7, film.getPosterUrl());
+                updateFilmST.setString(8, film.getPosterUrlPreview());
+                updateFilmST.addBatch();
+
+                updateFilmST.executeBatch();
+                connection.commit();
+
+                CountryService.update(film.getCountries(), film.getFilmId().intValue());
+
+                GenreService.update(film.getGenres(), film.getFilmId().intValue());
+
             } else {
 
                 addFilmST.setInt(1, film.getFilmId().intValue());
@@ -58,9 +70,16 @@ public class FilmService {
 
                 // todo цикл для жанра
                 GenreService.add(film.getGenres(), film.getFilmId().intValue());
+
+            }
+
         }
 
         connection.close();
+
+        CountryService.execute();
+        GenreService.execute();
+
     }
 
     public static Films getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
@@ -100,44 +119,6 @@ public class FilmService {
         }
     }
 
-    public static void updateFilm(Films film) throws ClassNotFoundException, SQLException {
-        Connection connection = MyConnection.getConnection();
-        connection.setAutoCommit(false);
-        PreparedStatement checkST = connection.prepareStatement(Queries.UPDATE_CHECK_EXISTING_FILM);
-        PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM);
-
-
-
-        checkST.setInt(1, film.getFilmId().intValue());
-        ResultSet rsf = checkST.executeQuery();
-
-        if (rsf.next()) {
-
-            updateFilmST.setInt(9, film.getFilmId().intValue());
-            updateFilmST.setString(1, film.getNameRu());
-            updateFilmST.setString(2, film.getNameEn());
-            updateFilmST.setString(3, film.getYear());
-            updateFilmST.setString(4, film.getFilmLength());
-            updateFilmST.setString(5, film.getRating());
-            updateFilmST.setInt(6, film.getRatingVoteCount().intValue());
-            updateFilmST.setString(7, film.getPosterUrl());
-            updateFilmST.setString(8, film.getPosterUrlPreview());
-            updateFilmST.addBatch();
-
-            CountryService.update(film.getCountries(), film.getFilmId().intValue());
-
-            GenreService.update(film.getGenres(), film.getFilmId().intValue());
-
-        } else {
-            System.out.println("No film with id: " + film.getFilmId());
-        }
-        updateFilmST.executeBatch();
-
-
-        connection.commit();
-        connection.close();
-    }
-
     public static void deleteFilm(Long delIndex) throws ClassNotFoundException, SQLException {
 
         CountryService.delete(delIndex.intValue());
@@ -152,8 +133,6 @@ public class FilmService {
         delF.executeBatch();
         connection.commit();
         connection.close();
-
-
 
     }
 }

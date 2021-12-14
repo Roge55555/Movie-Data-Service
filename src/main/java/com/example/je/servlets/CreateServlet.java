@@ -1,6 +1,7 @@
 package com.example.je.servlets;
 
 import com.example.je.dao.Films;
+import com.example.je.dao.Pages;
 import com.example.je.services.FilmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,7 +23,7 @@ public class CreateServlet extends HttpServlet {
             inputLine.append(in.readLine());
         ObjectMapper mapper = new ObjectMapper();
         try {
-            FilmService.addFilm(mapper.readValue(inputLine.toString(), Films.class));
+            FilmService.saveFilms(mapper.readValue(inputLine.toString(), Pages.class).getFilms());
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

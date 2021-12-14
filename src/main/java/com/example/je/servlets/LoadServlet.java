@@ -40,7 +40,7 @@ public class LoadServlet extends HttpServlet {
         pages.setFilms(pages.getFilms().stream().distinct().collect(Collectors.toList()));
 
         try {
-            FilmService.loadFilms(pages.getFilms());
+            FilmService.saveFilms(pages.getFilms());
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

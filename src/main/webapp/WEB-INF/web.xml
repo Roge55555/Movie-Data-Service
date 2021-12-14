@@ -28,14 +28,6 @@
         <url-pattern>/films/element</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>updateServlet</servlet-name>
-        <servlet-class>com.example.je.servlets.UpdateServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>updateServlet</servlet-name>
-        <url-pattern>/films/modification</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>deleteServlet</servlet-name>
         <servlet-class>com.example.je.servlets.DeleteServlet</servlet-class>
     </servlet>

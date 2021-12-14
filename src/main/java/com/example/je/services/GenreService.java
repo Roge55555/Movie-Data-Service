@@ -13,21 +13,31 @@ import java.util.List;
 
 public class GenreService {
 
+    static Connection connection;
+    static PreparedStatement addFilmGenresST;
+    static PreparedStatement updateFilmGenresST;
+
+    public static void init() throws SQLException {
+        connection = MyConnection.getConnection();
+        addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+        updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
+    }
+
+    public static void execute() throws SQLException {
+        addFilmGenresST.executeBatch();
+        updateFilmGenresST.executeBatch();
+        connection.commit();
+        connection.close();
+    }
+
     public static void add(List<Genres> genresList, int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
-        PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
 
         for (Genres genre : genresList) {
             addFilmGenresST.setInt(1, filmId);
             addFilmGenresST.setString(2, genre.getGenre());
             addFilmGenresST.addBatch();
         }
-
-        addFilmGenresST.executeBatch();
-
-        connection.commit();
-        connection.close();
     }
 
     public static List<Genres> get(int filmId) throws SQLException {
@@ -46,22 +56,14 @@ public class GenreService {
     }
 
     public static void update(List<Genres> genresList, int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
-        PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
-
-        //updateFilmCountriesST.addBatch("delete from film_genres where film_id = " + film.getFilmId().intValue());
-        delete(filmId);
+        updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmId);
 
         for (Genres genre : genresList) {
             updateFilmGenresST.setInt(1, filmId);
             updateFilmGenresST.setString(2, genre.getGenre());
             updateFilmGenresST.addBatch();
         }
-
-        updateFilmGenresST.executeBatch();
-        connection.commit();
-        connection.close();
 
     }
 

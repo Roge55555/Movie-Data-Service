@@ -13,21 +13,31 @@ import java.util.List;
 
 public class CountryService {
 
+    static Connection connection;
+    static PreparedStatement addFilmCountriesST;
+    static PreparedStatement updateFilmCountriesST;
+
+    public static void init() throws SQLException {
+        connection = MyConnection.getConnection();
+        addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
+        updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
+    }
+
+    public static void execute() throws SQLException {
+        addFilmCountriesST.executeBatch();
+        updateFilmCountriesST.executeBatch();
+        connection.commit();
+        connection.close();
+    }
+
     public static void add(List<Countries> countriesList, int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
-        PreparedStatement addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
 
         for (Countries country : countriesList) {
             addFilmCountriesST.setInt(1, filmId);
             addFilmCountriesST.setString(2, country.getCountry());
             addFilmCountriesST.addBatch();
         }
-
-        addFilmCountriesST.executeBatch();
-
-        connection.commit();
-        connection.close();
     }
 
     public static List<Countries> get(int filmId) throws SQLException {
@@ -46,22 +56,14 @@ public class CountryService {
     }
 
     public static void update(List<Countries> countriesList, int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
-        PreparedStatement updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
-
-        //updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + film.getFilmId().intValue());
-        delete(filmId);
+        updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmId);
 
         for (Countries country : countriesList) {
             updateFilmCountriesST.setInt(1, filmId);
             updateFilmCountriesST.setString(2, country.getCountry());
             updateFilmCountriesST.addBatch();
         }
-
-        updateFilmCountriesST.executeBatch();
-        connection.commit();
-        connection.close();
 
     }
 
