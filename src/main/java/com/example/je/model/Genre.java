@@ -1,4 +1,4 @@
-package com.example.je.dao;
+package com.example.je.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class Genres {
+public class Genre {
 
     @JsonProperty("genre")
     private String genre;

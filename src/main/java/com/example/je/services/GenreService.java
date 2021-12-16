@@ -2,7 +2,7 @@ package com.example.je.services;
 
 import com.example.je.MyConnection;
 import com.example.je.Queries;
-import com.example.je.dao.Genres;
+import com.example.je.model.Genre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,36 +30,36 @@ public class GenreService {
         connection.close();
     }
 
-    public static void add(List<Genres> genresList, int filmId) throws SQLException {
+    public static void add(List<Genre> genreList, int filmId) throws SQLException {
         connection.setAutoCommit(false);
 
-        for (Genres genre : genresList) {
+        for (Genre genre : genreList) {
             addFilmGenresST.setInt(1, filmId);
             addFilmGenresST.setString(2, genre.getGenre());
             addFilmGenresST.addBatch();
         }
     }
 
-    public static List<Genres> get(int filmId) throws SQLException {
+    public static List<Genre> get(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM);
         getFilmGenresST.setInt(1, filmId);
         ResultSet rsg = getFilmGenresST.executeQuery();
         connection.close();
 
-        List<Genres> genres = new ArrayList<>();
+        List<Genre> genres = new ArrayList<>();
         while (rsg.next())
-            genres.add(new Genres(rsg.getString("name")));
+            genres.add(new Genre(rsg.getString("name")));
 
         return genres;
 
     }
 
-    public static void update(List<Genres> genresList, int filmId) throws SQLException {
+    public static void update(List<Genre> genreList, int filmId) throws SQLException {
         connection.setAutoCommit(false);
         updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmId);
 
-        for (Genres genre : genresList) {
+        for (Genre genre : genreList) {
             updateFilmGenresST.setInt(1, filmId);
             updateFilmGenresST.setString(2, genre.getGenre());
             updateFilmGenresST.addBatch();

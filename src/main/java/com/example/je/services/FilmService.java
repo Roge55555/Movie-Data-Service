@@ -2,7 +2,7 @@ package com.example.je.services;
 
 import com.example.je.MyConnection;
 import com.example.je.Queries;
-import com.example.je.dao.Films;
+import com.example.je.model.Film;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class FilmService {
 
-    public static void saveFilms(List<Films> films) throws ClassNotFoundException, SQLException {
+    public static void saveFilms(List<Film> films) throws ClassNotFoundException, SQLException {
 
         CountryService.init();
         GenreService.init();
@@ -23,7 +23,7 @@ public class FilmService {
         PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
         PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM);
 
-        for(Films film : films) { //todo цикл записи по 1 фильму фильмов
+        for(Film film : films) { //todo цикл записи по 1 фильму фильмов
 
             checkST.setString(1, film.getNameEn());
             checkST.setString(2, film.getNameRu());
@@ -82,7 +82,7 @@ public class FilmService {
 
     }
 
-    public static Films getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
+    public static Film getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
 
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFST = connection.prepareStatement(Queries.GET_FILM);
@@ -91,7 +91,7 @@ public class FilmService {
 
         if(rsf.next()) {
 
-            Films film = Films.builder()
+            Film film = Film.builder()
                     .filmId((long) rsf.getInt("id"))
                     .nameRu(rsf.getString("name_ru"))
                     .nameEn(rsf.getString("name_en"))

@@ -1,6 +1,6 @@
 package com.example.je.servlets;
 
-import com.example.je.dao.Pages;
+import com.example.je.model.Page;
 import com.example.je.services.FilmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,34 +18,32 @@ import java.util.stream.Collectors;
 
 public class LoadServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int page = 0;
+        int pageNumber = 0;
         int end;
-        Pages pages = new Pages();
+        Page page = new Page();
 
         do {
-            page++;
+            pageNumber++;
 
-            URL urldemo = new URL("https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_250_BEST_FILMS&page=" + page);
+            URL urldemo = new URL("https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_250_BEST_FILMS&page=" + pageNumber);
             URLConnection yc = urldemo.openConnection();
             yc.setRequestProperty("X-API-KEY", "2c2c61fe-07c5-47d2-9ce0-f3f6ad187b7e");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
             String inputLine = in.readLine();
             ObjectMapper mapper = new ObjectMapper();
-            pages.addFilms(mapper.readValue(inputLine, Pages.class).getFilms(), mapper.readValue(inputLine, Pages.class).getPagesCount());
+            page.addFilms(mapper.readValue(inputLine, Page.class).getFilms(), mapper.readValue(inputLine, Page.class).getPagesCount());
 
-            end = pages.getPagesCount().intValue();
-        } while (page < end);
+            end = page.getPagesCount().intValue();
+        } while (pageNumber < end);
 
-        pages.setFilms(pages.getFilms().stream().distinct().collect(Collectors.toList()));
+        page.setFilms(page.getFilms().stream().distinct().collect(Collectors.toList()));
 
         try {
-            FilmService.saveFilms(pages.getFilms());
+            FilmService.saveFilms(page.getFilms());
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-
-
     }
 }
 

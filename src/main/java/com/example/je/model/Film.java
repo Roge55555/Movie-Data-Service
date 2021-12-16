@@ -1,4 +1,4 @@
-package com.example.je.dao;
+package com.example.je.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class Films {
+public class Film {
 
     @JsonProperty("filmId")
     private Long filmId;
@@ -34,10 +34,10 @@ public class Films {
     private String filmLength;
 
     @JsonProperty("countries")
-    private List<Countries> countries;
+    private List<Country> countries;
 
     @JsonProperty("genres")
-    private List<Genres> genres;
+    private List<Genre> genres;
 
     @JsonProperty("rating")
     private String rating;

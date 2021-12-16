@@ -21,7 +21,7 @@ public class ReadServlet extends HttpServlet {
             String filmJsonString = new Gson().toJson(FilmService.getFilm(getId));
             resp.getWriter().write(filmJsonString);
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }

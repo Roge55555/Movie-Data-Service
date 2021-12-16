@@ -2,7 +2,7 @@ package com.example.je.services;
 
 import com.example.je.MyConnection;
 import com.example.je.Queries;
-import com.example.je.dao.Countries;
+import com.example.je.model.Country;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,36 +30,36 @@ public class CountryService {
         connection.close();
     }
 
-    public static void add(List<Countries> countriesList, int filmId) throws SQLException {
+    public static void add(List<Country> countryList, int filmId) throws SQLException {
         connection.setAutoCommit(false);
 
-        for (Countries country : countriesList) {
+        for (Country country : countryList) {
             addFilmCountriesST.setInt(1, filmId);
             addFilmCountriesST.setString(2, country.getCountry());
             addFilmCountriesST.addBatch();
         }
     }
 
-    public static List<Countries> get(int filmId) throws SQLException {
+    public static List<Country> get(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFilmCountriesST = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM);
         getFilmCountriesST.setInt(1, filmId);
         ResultSet rsc = getFilmCountriesST.executeQuery();
         connection.close();
 
-        List<Countries> countries = new ArrayList<>();
+        List<Country> countries = new ArrayList<>();
         while (rsc.next())
-            countries.add(new Countries(rsc.getString("name")));
+            countries.add(new Country(rsc.getString("name")));
 
         return countries;
 
     }
 
-    public static void update(List<Countries> countriesList, int filmId) throws SQLException {
+    public static void update(List<Country> countryList, int filmId) throws SQLException {
         connection.setAutoCommit(false);
         updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmId);
 
-        for (Countries country : countriesList) {
+        for (Country country : countryList) {
             updateFilmCountriesST.setInt(1, filmId);
             updateFilmCountriesST.setString(2, country.getCountry());
             updateFilmCountriesST.addBatch();

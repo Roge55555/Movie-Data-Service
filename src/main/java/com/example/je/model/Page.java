@@ -1,4 +1,4 @@
-package com.example.je.dao;
+package com.example.je.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,15 +16,15 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class Pages {
+public class Page {
 
     @JsonProperty("pagesCount")
     private Long pagesCount;
 
     @JsonProperty("films")
-    private List<Films> films;
+    private List<Film> films;
 
-    public void addFilms(List<Films> newFilms, Long pagesCount) {
+    public void addFilms(List<Film> newFilms, Long pagesCount) {
         if(films == null)
             this.films = newFilms;
         else

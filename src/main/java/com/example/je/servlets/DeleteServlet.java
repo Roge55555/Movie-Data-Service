@@ -17,7 +17,7 @@ public class DeleteServlet extends HttpServlet {
         try {
             FilmService.deleteFilm(delId);
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }
