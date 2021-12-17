@@ -3,19 +3,56 @@ package com.example.je.services;
 import com.example.je.MyConnection;
 import com.example.je.Queries;
 import com.example.je.model.Film;
+import com.example.je.model.FilmCountryGenre;
+import com.example.je.model.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FilmService {
 
-    public static void saveFilms(List<Film> films) throws ClassNotFoundException, SQLException {
+    public static List<Film> loadFilms() throws ClassNotFoundException, SQLException, IOException {
+        int pageNumber = 0;
+        int end;
+        Page page = new Page();
+        List<Film> films = new ArrayList<>();
 
-        CountryService.init();
-        GenreService.init();
+        do {
+            pageNumber++;
+
+            URL urldemo = new URL("https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_250_BEST_FILMS&page=" + pageNumber);
+            URLConnection yc = urldemo.openConnection();
+            yc.setRequestProperty("X-API-KEY", "2c2c61fe-07c5-47d2-9ce0-f3f6ad187b7e");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
+            String inputLine = in.readLine();
+            ObjectMapper mapper = new ObjectMapper();
+            page.setPagesCount(mapper.readValue(inputLine, Page.class).getPagesCount());
+            PageService.addFilms(page, mapper.readValue(inputLine, Page.class).getFilms());// нужно ли присваивать page?
+
+            end = page.getPagesCount().intValue();
+        } while (pageNumber < end);
+
+        page.setFilms(page.getFilms().stream().distinct().collect(Collectors.toList()));
+
+        return page.getFilms();
+    }
+
+    public static List<FilmCountryGenre> saveFilms(List<Film> films) throws ClassNotFoundException, SQLException {
+
+        List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
 
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
@@ -23,7 +60,7 @@ public class FilmService {
         PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
         PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM);
 
-        for(Film film : films) { //todo цикл записи по 1 фильму фильмов
+        for(Film film : films) {
 
             checkST.setString(1, film.getNameEn());
             checkST.setString(2, film.getNameRu());
@@ -45,9 +82,7 @@ public class FilmService {
                 updateFilmST.executeBatch();
                 connection.commit();
 
-                CountryService.update(film.getCountries(), film.getFilmId().intValue());
-
-                GenreService.update(film.getGenres(), film.getFilmId().intValue());
+                filmCountryGenreList.add(new FilmCountryGenre(film.getFilmId(), film.getCountries(), film.getGenres(), true));
 
             } else {
 
@@ -65,21 +100,14 @@ public class FilmService {
                 addFilmST.executeBatch();
                 connection.commit();
 
-                // todo записи стран
-                CountryService.add(film.getCountries(), film.getFilmId().intValue());
-
-                // todo цикл для жанра
-                GenreService.add(film.getGenres(), film.getFilmId().intValue());
+                filmCountryGenreList.add(new FilmCountryGenre(film.getFilmId(), film.getCountries(), film.getGenres(), false));
 
             }
-
         }
 
         connection.close();
 
-        CountryService.execute();
-        GenreService.execute();
-
+        return filmCountryGenreList;
     }
 
     public static Film getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
@@ -102,10 +130,6 @@ public class FilmService {
                     .posterUrl(rsf.getString("poster_url"))
                     .posterUrlPreview(rsf.getString("poster_url_preview")).build();
 
-            film.setCountries(CountryService.get(getIndex.intValue()));
-
-            film.setGenres(GenreService.get(getIndex.intValue()));
-
             connection.close();
 
             return film;
@@ -120,10 +144,6 @@ public class FilmService {
     }
 
     public static void deleteFilm(Long delIndex) throws ClassNotFoundException, SQLException {
-
-        CountryService.delete(delIndex.intValue());
-
-        GenreService.delete(delIndex.intValue());
 
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);

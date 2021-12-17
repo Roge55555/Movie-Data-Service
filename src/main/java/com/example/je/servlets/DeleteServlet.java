@@ -1,6 +1,8 @@
 package com.example.je.servlets;
 
+import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
+import com.example.je.services.GenreService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,8 @@ public class DeleteServlet extends HttpServlet {
 
             Long delId = Long.valueOf(req.getReader().lines().collect(Collectors.toList()).get(0));
         try {
+            CountryService.delete(delId.intValue());
+            GenreService.delete(delId.intValue());
             FilmService.deleteFilm(delId);
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getMessage());

@@ -1,6 +1,5 @@
 package com.example.je.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,12 +15,13 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class Page {
+public class FilmCountryGenre {
 
-    @JsonProperty("pagesCount")
-    private Long pagesCount;
+    private Long filmId;
 
-    @JsonProperty("films")
-    private List<Film> films;
+    private List<Country> countryList;
 
+    private List<Genre> genreList;
+
+    private Boolean isExist;
 }

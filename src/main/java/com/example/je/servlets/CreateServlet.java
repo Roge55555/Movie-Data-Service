@@ -1,7 +1,11 @@
 package com.example.je.servlets;
 
+import com.example.je.model.Film;
+import com.example.je.model.FilmCountryGenre;
 import com.example.je.model.Page;
+import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
+import com.example.je.services.GenreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.http.HttpServlet;
@@ -12,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
 
 public class CreateServlet extends HttpServlet {
     @Override
@@ -22,7 +28,15 @@ public class CreateServlet extends HttpServlet {
             inputLine.append(in.readLine());
         ObjectMapper mapper = new ObjectMapper();
         try {
-            FilmService.saveFilms(mapper.readValue(inputLine.toString(), Page.class).getFilms());
+            List<Film> films = mapper.readValue(inputLine.toString(), Page.class).getFilms();
+            if (Objects.nonNull(films)) {
+            List<FilmCountryGenre> filmCountryGenreList = FilmService.saveFilms(films);
+            CountryService.saveCountry(filmCountryGenreList);
+            GenreService.saveGenre(filmCountryGenreList);
+            }
+            else {
+                resp.getWriter().write("No data!");
+            }
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getMessage());
         }

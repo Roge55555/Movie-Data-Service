@@ -2,6 +2,7 @@ package com.example.je.services;
 
 import com.example.je.MyConnection;
 import com.example.je.Queries;
+import com.example.je.model.FilmCountryGenre;
 import com.example.je.model.Genre;
 
 import java.sql.Connection;
@@ -30,14 +31,32 @@ public class GenreService {
         connection.close();
     }
 
-    public static void add(List<Genre> genreList, int filmId) throws SQLException {
-        connection.setAutoCommit(false);
+    public static void saveGenre(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
+        init();
 
-        for (Genre genre : genreList) {
-            addFilmGenresST.setInt(1, filmId);
-            addFilmGenresST.setString(2, genre.getGenre());
-            addFilmGenresST.addBatch();
+        connection.setAutoCommit(false);
+        for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
+            if (filmCountryGenre.getIsExist()) {
+
+                updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmCountryGenre.getFilmId());
+
+                for (Genre genre : filmCountryGenre.getGenreList()) {
+                    updateFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                    updateFilmGenresST.setString(2, genre.getGenre());
+                    updateFilmGenresST.addBatch();
+                }
+            }
+            else {
+                for (Genre genre : filmCountryGenre.getGenreList()) {
+                    addFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                    addFilmGenresST.setString(2, genre.getGenre());
+                    addFilmGenresST.addBatch();
+                }
+            }
         }
+
+
+        execute();
     }
 
     public static List<Genre> get(int filmId) throws SQLException {
@@ -52,18 +71,6 @@ public class GenreService {
             genres.add(new Genre(rsg.getString("name")));
 
         return genres;
-
-    }
-
-    public static void update(List<Genre> genreList, int filmId) throws SQLException {
-        connection.setAutoCommit(false);
-        updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmId);
-
-        for (Genre genre : genreList) {
-            updateFilmGenresST.setInt(1, filmId);
-            updateFilmGenresST.setString(2, genre.getGenre());
-            updateFilmGenresST.addBatch();
-        }
 
     }
 

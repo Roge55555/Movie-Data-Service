@@ -3,6 +3,7 @@ package com.example.je.services;
 import com.example.je.MyConnection;
 import com.example.je.Queries;
 import com.example.je.model.Country;
+import com.example.je.model.FilmCountryGenre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,14 +31,31 @@ public class CountryService {
         connection.close();
     }
 
-    public static void add(List<Country> countryList, int filmId) throws SQLException {
-        connection.setAutoCommit(false);
+    public static void saveCountry(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
+        init();
 
-        for (Country country : countryList) {
-            addFilmCountriesST.setInt(1, filmId);
-            addFilmCountriesST.setString(2, country.getCountry());
-            addFilmCountriesST.addBatch();
+        connection.setAutoCommit(false);
+        for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
+
+            if (filmCountryGenre.getIsExist()) {
+                updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmCountryGenre.getFilmId());
+
+                for (Country country : filmCountryGenre.getCountryList()) {
+                    updateFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                    updateFilmCountriesST.setString(2, country.getCountry());
+                    updateFilmCountriesST.addBatch();
+                }
+            }
+            else {
+                for (Country country : filmCountryGenre.getCountryList()) {
+                    addFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                    addFilmCountriesST.setString(2, country.getCountry());
+                    addFilmCountriesST.addBatch();
+                }
+            }
         }
+
+        execute();
     }
 
     public static List<Country> get(int filmId) throws SQLException {
@@ -52,18 +70,6 @@ public class CountryService {
             countries.add(new Country(rsc.getString("name")));
 
         return countries;
-
-    }
-
-    public static void update(List<Country> countryList, int filmId) throws SQLException {
-        connection.setAutoCommit(false);
-        updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmId);
-
-        for (Country country : countryList) {
-            updateFilmCountriesST.setInt(1, filmId);
-            updateFilmCountriesST.setString(2, country.getCountry());
-            updateFilmCountriesST.addBatch();
-        }
 
     }
 

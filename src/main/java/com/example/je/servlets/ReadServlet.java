@@ -1,6 +1,9 @@
 package com.example.je.servlets;
 
+import com.example.je.model.Film;
+import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
+import com.example.je.services.GenreService;
 import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServlet;
@@ -8,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReadServlet extends HttpServlet {
@@ -18,8 +22,17 @@ public class ReadServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         try {
-            String filmJsonString = new Gson().toJson(FilmService.getFilm(getId));
-            resp.getWriter().write(filmJsonString);
+            Film film = FilmService.getFilm(getId);
+            if (Objects.nonNull(film)) {
+                film.setCountries(CountryService.get(getId.intValue()));
+                film.setGenres(GenreService.get(getId.intValue()));
+
+                String filmJsonString = new Gson().toJson(film);
+                resp.getWriter().write(filmJsonString);
+            }
+            else {
+                resp.getWriter().write("No film with such Id");
+            }
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getMessage());
         }
