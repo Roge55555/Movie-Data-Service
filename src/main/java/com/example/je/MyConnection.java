@@ -12,7 +12,7 @@ public class MyConnection {
     private final String password = "kpuser";
     private final String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
 
-    public MyConnection() {
+    private MyConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -22,7 +22,7 @@ public class MyConnection {
 
     public static Connection getConnection() throws SQLException {
 
-        if(connection == null) {
+        if (connection == null) {
             connection = new MyConnection();
             System.out.println("connected");
         }
