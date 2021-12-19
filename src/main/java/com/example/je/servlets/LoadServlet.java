@@ -14,13 +14,19 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class LoadServlet extends HttpServlet {
+
+    private final FilmService filmService = FilmService.getService();
+    private final CountryService countryService = CountryService.getService();
+    private final GenreService genreService = GenreService.getService();
+
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         try {
-            List<Film> films = FilmService.loadFilms();
-            List<FilmCountryGenre> filmCountryGenreList = FilmService.saveFilms(films);
-            CountryService.saveCountry(filmCountryGenreList);
-            GenreService.saveGenre(filmCountryGenreList);
+            List<Film> films = filmService.loadFilms();
+            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
+            countryService.saveCountry(filmCountryGenreList);
+            genreService.saveGenre(filmCountryGenreList);
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getMessage());
         }

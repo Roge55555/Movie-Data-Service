@@ -6,8 +6,22 @@ import com.example.je.model.Page;
 import java.util.List;
 
 public class PageService {
-    public static void addFilms(Page page, List<Film> newFilms) {
-        if(page.getFilms() == null) {
+
+    private static PageService pageService = null;
+
+    private PageService() {
+        System.out.println("pageservice init");
+    }
+
+    public static PageService getService() {
+        if (pageService == null) {
+            pageService = new PageService();
+        }
+        return pageService;
+    }
+
+    public void addFilms(Page page, List<Film> newFilms) {
+        if (page.getFilms() == null) {
             page.setFilms(newFilms);
         }
         else {

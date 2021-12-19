@@ -14,25 +14,23 @@ import java.util.List;
 
 public class GenreService {
 
-    static Connection connection;
-    static PreparedStatement addFilmGenresST;
-    static PreparedStatement updateFilmGenresST;
+    private static GenreService genreService = null;
 
-    public static void init() throws SQLException {
-        connection = MyConnection.getConnection();
-        addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
-        updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
+    private GenreService() {
+        System.out.println("genreservice init");
     }
 
-    public static void execute() throws SQLException {
-        addFilmGenresST.executeBatch();
-        updateFilmGenresST.executeBatch();
-        connection.commit();
-        connection.close();
+    public static GenreService getService() {
+        if (genreService == null) {
+            genreService = new GenreService();
+        }
+        return genreService;
     }
 
-    public static void saveGenre(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
-        init();
+    public void saveGenre(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
+        Connection connection = MyConnection.getConnection();
+        PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+        PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
 
         connection.setAutoCommit(false);
         for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -55,11 +53,13 @@ public class GenreService {
             }
         }
 
-
-        execute();
+        addFilmGenresST.executeBatch();
+        updateFilmGenresST.executeBatch();
+        connection.commit();
+        connection.close();
     }
 
-    public static List<Genre> get(int filmId) throws SQLException {
+    public List<Genre> get(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM);
         getFilmGenresST.setInt(1, filmId);
@@ -74,7 +74,7 @@ public class GenreService {
 
     }
 
-    public static void delete(int filmId) throws SQLException {
+    public void delete(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
         PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM);

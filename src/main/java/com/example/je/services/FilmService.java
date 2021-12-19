@@ -23,11 +23,25 @@ import java.util.stream.Collectors;
 
 public class FilmService {
 
-    public static List<Film> loadFilms() throws ClassNotFoundException, SQLException, IOException {
+    private static FilmService filmService = null;
+
+    private final PageService pageService = PageService.getService();
+
+    private FilmService() {
+        System.out.println("filmservice init");
+    }
+
+    public static FilmService getService() {
+        if (filmService == null) {
+            filmService = new FilmService();
+        }
+        return filmService;
+    }
+
+    public List<Film> loadFilms() throws ClassNotFoundException, SQLException, IOException {
         int pageNumber = 0;
         int end;
         Page page = new Page();
-        List<Film> films = new ArrayList<>();
 
         do {
             pageNumber++;
@@ -40,7 +54,7 @@ public class FilmService {
             String inputLine = in.readLine();
             ObjectMapper mapper = new ObjectMapper();
             page.setPagesCount(mapper.readValue(inputLine, Page.class).getPagesCount());
-            PageService.addFilms(page, mapper.readValue(inputLine, Page.class).getFilms());// нужно ли присваивать page?
+            pageService.addFilms(page, mapper.readValue(inputLine, Page.class).getFilms());
 
             end = page.getPagesCount().intValue();
         } while (pageNumber < end);
@@ -50,7 +64,7 @@ public class FilmService {
         return page.getFilms();
     }
 
-    public static List<FilmCountryGenre> saveFilms(List<Film> films) throws ClassNotFoundException, SQLException {
+    public List<FilmCountryGenre> saveFilms(List<Film> films) throws ClassNotFoundException, SQLException {
 
         List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
 
@@ -110,14 +124,14 @@ public class FilmService {
         return filmCountryGenreList;
     }
 
-    public static Film getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
+    public Film getFilm(Long getIndex) throws ClassNotFoundException, SQLException {
 
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFST = connection.prepareStatement(Queries.GET_FILM);
         getFST.setInt(1, getIndex.intValue());
         ResultSet rsf = getFST.executeQuery();
 
-        if(rsf.next()) {
+        if (rsf.next()) {
 
             Film film = Film.builder()
                     .filmId((long) rsf.getInt("id"))
@@ -143,7 +157,7 @@ public class FilmService {
         }
     }
 
-    public static void deleteFilm(Long delIndex) throws ClassNotFoundException, SQLException {
+    public void deleteFilm(Long delIndex) throws ClassNotFoundException, SQLException {
 
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);

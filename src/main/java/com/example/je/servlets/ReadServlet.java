@@ -15,6 +15,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReadServlet extends HttpServlet {
+
+    private final FilmService filmService = FilmService.getService();
+    private final CountryService countryService = CountryService.getService();
+    private final GenreService genreService = GenreService.getService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long getId = Long.valueOf(req.getReader().lines().collect(Collectors.toList()).get(0));
@@ -22,10 +27,10 @@ public class ReadServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         try {
-            Film film = FilmService.getFilm(getId);
+            Film film = filmService.getFilm(getId);
             if (Objects.nonNull(film)) {
-                film.setCountries(CountryService.get(getId.intValue()));
-                film.setGenres(GenreService.get(getId.intValue()));
+                film.setCountries(countryService.get(getId.intValue()));
+                film.setGenres(genreService.get(getId.intValue()));
 
                 String filmJsonString = new Gson().toJson(film);
                 resp.getWriter().write(filmJsonString);

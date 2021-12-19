@@ -20,6 +20,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class CreateServlet extends HttpServlet {
+
+    private final FilmService filmService = FilmService.getService();
+    private final CountryService countryService = CountryService.getService();
+    private final GenreService genreService = GenreService.getService();
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
@@ -30,9 +35,9 @@ public class CreateServlet extends HttpServlet {
         try {
             List<Film> films = mapper.readValue(inputLine.toString(), Page.class).getFilms();
             if (Objects.nonNull(films)) {
-            List<FilmCountryGenre> filmCountryGenreList = FilmService.saveFilms(films);
-            CountryService.saveCountry(filmCountryGenreList);
-            GenreService.saveGenre(filmCountryGenreList);
+            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
+            countryService.saveCountry(filmCountryGenreList);
+            genreService.saveGenre(filmCountryGenreList);
             }
             else {
                 resp.getWriter().write("No data!");

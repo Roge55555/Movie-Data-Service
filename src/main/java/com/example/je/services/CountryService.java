@@ -14,25 +14,23 @@ import java.util.List;
 
 public class CountryService {
 
-    static Connection connection;
-    static PreparedStatement addFilmCountriesST;
-    static PreparedStatement updateFilmCountriesST;
+    private static CountryService countryService = null;
 
-    public static void init() throws SQLException {
-        connection = MyConnection.getConnection();
-        addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
-        updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
+    private CountryService() {
+        System.out.println("countryservice init");
     }
 
-    public static void execute() throws SQLException {
-        addFilmCountriesST.executeBatch();
-        updateFilmCountriesST.executeBatch();
-        connection.commit();
-        connection.close();
+    public static CountryService getService() {
+        if (countryService == null) {
+            countryService = new CountryService();
+        }
+        return countryService;
     }
 
-    public static void saveCountry(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
-        init();
+    public void saveCountry(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
+        Connection connection = MyConnection.getConnection();
+        PreparedStatement addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
+        PreparedStatement updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
 
         connection.setAutoCommit(false);
         for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -55,10 +53,13 @@ public class CountryService {
             }
         }
 
-        execute();
+        addFilmCountriesST.executeBatch();
+        updateFilmCountriesST.executeBatch();
+        connection.commit();
+        connection.close();
     }
 
-    public static List<Country> get(int filmId) throws SQLException {
+    public List<Country> get(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         PreparedStatement getFilmCountriesST = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM);
         getFilmCountriesST.setInt(1, filmId);
@@ -73,7 +74,7 @@ public class CountryService {
 
     }
 
-    public static void delete(int filmId) throws SQLException {
+    public void delete(int filmId) throws SQLException {
         Connection connection = MyConnection.getConnection();
         connection.setAutoCommit(false);
         PreparedStatement delFilmCountriesST = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM);
