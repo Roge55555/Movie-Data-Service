@@ -12,12 +12,12 @@
         <url-pattern>/films/download</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>CreateServlet</servlet-name>
-        <servlet-class>com.example.je.servlets.CreateServlet</servlet-class>
+        <servlet-name>PutServlet</servlet-name>
+        <servlet-class>com.example.je.servlets.PutServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>CreateServlet</servlet-name>
-        <url-pattern>/films/creation</url-pattern>
+        <servlet-name>PutServlet</servlet-name>
+        <url-pattern>/films/put</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>getServlet</servlet-name>

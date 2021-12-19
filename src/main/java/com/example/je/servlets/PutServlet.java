@@ -19,14 +19,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
-public class CreateServlet extends HttpServlet {
+public class PutServlet extends HttpServlet {
 
     private final FilmService filmService = FilmService.getService();
     private final CountryService countryService = CountryService.getService();
     private final GenreService genreService = GenreService.getService();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder inputLine = new StringBuilder();
         while (in.ready())
