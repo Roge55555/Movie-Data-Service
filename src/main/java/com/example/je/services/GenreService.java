@@ -36,9 +36,9 @@ public class GenreService {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
-                if (filmCountryGenre.getIsExist()) {
 
-                    updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmCountryGenre.getFilmId());
+                if (filmCountryGenre.getIsExist()) {
+                    delete(filmCountryGenre.getFilmId().intValue());
 
                     for (Genre genre : filmCountryGenre.getGenreList()) {
                         updateFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
@@ -79,6 +79,10 @@ public class GenreService {
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
+        }
+
+        if (genres.isEmpty()) {
+            return null;
         }
 
         return genres;

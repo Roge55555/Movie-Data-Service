@@ -38,7 +38,7 @@ public class CountryService {
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
 
                 if (filmCountryGenre.getIsExist()) {
-                    updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmCountryGenre.getFilmId());
+                    delete(filmCountryGenre.getFilmId().intValue());
 
                     for (Country country : filmCountryGenre.getCountryList()) {
                         updateFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
@@ -79,6 +79,10 @@ public class CountryService {
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
+        }
+
+        if (countries.isEmpty()) {
+            return null;
         }
 
         return countries;
