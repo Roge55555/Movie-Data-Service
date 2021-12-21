@@ -60,7 +60,7 @@ public class GenreService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ public class GenreService {
                 genres.add(new Genre(rsg.getString("name")));
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
 
         return genres;
@@ -97,7 +97,7 @@ public class GenreService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
 
     }

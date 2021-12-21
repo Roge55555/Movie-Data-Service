@@ -62,7 +62,7 @@ public class FilmService {
                 pageService.addFilms(page, mapper.readValue(inputLine, Page.class).getFilms());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
             end = page.getPagesCount().intValue();
         } while (pageNumber < end);
@@ -131,7 +131,7 @@ public class FilmService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
 
         return filmCountryGenreList;
@@ -188,7 +188,7 @@ public class FilmService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
     }
 }

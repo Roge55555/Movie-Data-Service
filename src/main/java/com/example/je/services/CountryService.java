@@ -60,7 +60,7 @@ public class CountryService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ public class CountryService {
                 countries.add(new Country(rsc.getString("name")));
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
 
         return countries;
@@ -97,7 +97,7 @@ public class CountryService {
             connection.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }
 
     }
