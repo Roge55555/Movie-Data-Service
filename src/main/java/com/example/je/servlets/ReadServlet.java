@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -26,20 +25,16 @@ public class ReadServlet extends HttpServlet {
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        try {
-            Film film = filmService.getFilm(getId);
-            if (Objects.nonNull(film)) {
-                film.setCountries(countryService.get(getId.intValue()));
-                film.setGenres(genreService.get(getId.intValue()));
+        Film film = filmService.getFilm(getId);
+        if (Objects.nonNull(film)) {
+            film.setCountries(countryService.get(getId.intValue()));
+            film.setGenres(genreService.get(getId.intValue()));
 
-                String filmJsonString = new Gson().toJson(film);
-                resp.getWriter().write(filmJsonString);
-            }
-            else {
-                resp.getWriter().write("No film with such Id");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println(e.getMessage());
+            String filmJsonString = new Gson().toJson(film);
+            resp.getWriter().write(filmJsonString);
+        }
+        else {
+            resp.getWriter().write("No film with such Id");
         }
     }
 }

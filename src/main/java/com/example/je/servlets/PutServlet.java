@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,18 +31,14 @@ public class PutServlet extends HttpServlet {
         while (in.ready())
             inputLine.append(in.readLine());
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            List<Film> films = mapper.readValue(inputLine.toString(), Page.class).getFilms();
-            if (Objects.nonNull(films)) {
-            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
-            countryService.saveCountry(filmCountryGenreList);
-            genreService.saveGenre(filmCountryGenreList);
-            }
-            else {
-                resp.getWriter().write("No data!");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println(e.getMessage());
+        List<Film> films = mapper.readValue(inputLine.toString(), Page.class).getFilms();
+        if (Objects.nonNull(films)) {
+        List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
+        countryService.saveCountry(filmCountryGenreList);
+        genreService.saveGenre(filmCountryGenreList);
+        }
+        else {
+            resp.getWriter().write("No data!");
         }
     }
 }
