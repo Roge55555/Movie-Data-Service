@@ -1,20 +1,38 @@
 package com.example.je;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class MyConnection {
 
     private static MyConnection connection = null;
 
-    private final String userName = "kpuser";
-    private final String password = "kpuser";
-    private final String connectionUrl = "jdbc:mysql://localhost:3306/kinopoiskdb";
+    private String userName;
+    private String password;
+    private String connectionUrl;
+    private String jdbcDriver;
+
 
     private MyConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Properties props = new Properties();
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            InputStream inputStream = classloader.getResourceAsStream("application.properties");
+            props.load(inputStream);
+            connectionUrl = props.get("db.url").toString();
+            userName = props.get("db.user").toString();
+            password = props.get("db.password").toString();
+            jdbcDriver = props.get("db.driver").toString();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            Class.forName(jdbcDriver);
         } catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
