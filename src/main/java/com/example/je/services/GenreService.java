@@ -27,62 +27,78 @@ public class GenreService {
         return genreService;
     }
 
-    public void saveGenre(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
-        PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
+    public void saveGenre(List<FilmCountryGenre> filmCountryGenreList) {
+        try {
+            Connection connection = MyConnection.getConnection();
 
-        connection.setAutoCommit(false);
-        for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
-            if (filmCountryGenre.getIsExist()) {
+            PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+            PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
 
-                updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmCountryGenre.getFilmId());
+            connection.setAutoCommit(false);
+            for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
+                if (filmCountryGenre.getIsExist()) {
 
-                for (Genre genre : filmCountryGenre.getGenreList()) {
-                    updateFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                    updateFilmGenresST.setString(2, genre.getGenre());
-                    updateFilmGenresST.addBatch();
+                    updateFilmGenresST.addBatch("delete from film_genres where film_id = " + filmCountryGenre.getFilmId());
+
+                    for (Genre genre : filmCountryGenre.getGenreList()) {
+                        updateFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        updateFilmGenresST.setString(2, genre.getGenre());
+                        updateFilmGenresST.addBatch();
+                    }
+                } else {
+                    for (Genre genre : filmCountryGenre.getGenreList()) {
+                        addFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        addFilmGenresST.setString(2, genre.getGenre());
+                        addFilmGenresST.addBatch();
+                    }
                 }
             }
-            else {
-                for (Genre genre : filmCountryGenre.getGenreList()) {
-                    addFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                    addFilmGenresST.setString(2, genre.getGenre());
-                    addFilmGenresST.addBatch();
-                }
-            }
+
+            addFilmGenresST.executeBatch();
+            updateFilmGenresST.executeBatch();
+            connection.commit();
+            connection.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public List<Genre> get(int filmId) {
+        List<Genre> genres = new ArrayList<>();
+        try {
+            Connection connection = MyConnection.getConnection();
+
+            PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM);
+            getFilmGenresST.setInt(1, filmId);
+            ResultSet rsg = getFilmGenresST.executeQuery();
+            connection.close();
+
+            while (rsg.next())
+                genres.add(new Genre(rsg.getString("name")));
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
-        addFilmGenresST.executeBatch();
-        updateFilmGenresST.executeBatch();
-        connection.commit();
-        connection.close();
-    }
-
-    public List<Genre> get(int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM);
-        getFilmGenresST.setInt(1, filmId);
-        ResultSet rsg = getFilmGenresST.executeQuery();
-        connection.close();
-
-        List<Genre> genres = new ArrayList<>();
-        while (rsg.next())
-            genres.add(new Genre(rsg.getString("name")));
-
         return genres;
-
     }
 
-    public void delete(int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        connection.setAutoCommit(false);
-        PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM);
-        delFilmGenresST.setInt(1, filmId);
-        delFilmGenresST.addBatch();
-        delFilmGenresST.executeBatch();
-        connection.commit();
-        connection.close();
+    public void delete(int filmId) {
+        try {
+            Connection connection = MyConnection.getConnection();
+
+            connection.setAutoCommit(false);
+            PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM);
+            delFilmGenresST.setInt(1, filmId);
+            delFilmGenresST.addBatch();
+            delFilmGenresST.executeBatch();
+            connection.commit();
+            connection.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
     }
 }

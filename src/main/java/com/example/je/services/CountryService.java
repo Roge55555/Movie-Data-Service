@@ -27,62 +27,78 @@ public class CountryService {
         return countryService;
     }
 
-    public void saveCountry(List<FilmCountryGenre> filmCountryGenreList) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        PreparedStatement addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
-        PreparedStatement updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
+    public void saveCountry(List<FilmCountryGenre> filmCountryGenreList) {
+        try {
+            Connection connection = MyConnection.getConnection();
 
-        connection.setAutoCommit(false);
-        for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
+            PreparedStatement addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
+            PreparedStatement updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM);
 
-            if (filmCountryGenre.getIsExist()) {
-                updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmCountryGenre.getFilmId());
+            connection.setAutoCommit(false);
+            for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
 
-                for (Country country : filmCountryGenre.getCountryList()) {
-                    updateFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                    updateFilmCountriesST.setString(2, country.getCountry());
-                    updateFilmCountriesST.addBatch();
+                if (filmCountryGenre.getIsExist()) {
+                    updateFilmCountriesST.addBatch("delete from film_countries where film_id = " + filmCountryGenre.getFilmId());
+
+                    for (Country country : filmCountryGenre.getCountryList()) {
+                        updateFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        updateFilmCountriesST.setString(2, country.getCountry());
+                        updateFilmCountriesST.addBatch();
+                    }
+                } else {
+                    for (Country country : filmCountryGenre.getCountryList()) {
+                        addFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        addFilmCountriesST.setString(2, country.getCountry());
+                        addFilmCountriesST.addBatch();
+                    }
                 }
             }
-            else {
-                for (Country country : filmCountryGenre.getCountryList()) {
-                    addFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                    addFilmCountriesST.setString(2, country.getCountry());
-                    addFilmCountriesST.addBatch();
-                }
-            }
+
+            addFilmCountriesST.executeBatch();
+            updateFilmCountriesST.executeBatch();
+            connection.commit();
+            connection.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public List<Country> get(int filmId) {
+        List<Country> countries = new ArrayList<>();
+        try {
+            Connection connection = MyConnection.getConnection();
+
+            PreparedStatement getFilmCountriesST = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM);
+            getFilmCountriesST.setInt(1, filmId);
+            ResultSet rsc = getFilmCountriesST.executeQuery();
+            connection.close();
+
+            while (rsc.next())
+                countries.add(new Country(rsc.getString("name")));
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
-        addFilmCountriesST.executeBatch();
-        updateFilmCountriesST.executeBatch();
-        connection.commit();
-        connection.close();
-    }
-
-    public List<Country> get(int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        PreparedStatement getFilmCountriesST = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM);
-        getFilmCountriesST.setInt(1, filmId);
-        ResultSet rsc = getFilmCountriesST.executeQuery();
-        connection.close();
-
-        List<Country> countries = new ArrayList<>();
-        while (rsc.next())
-            countries.add(new Country(rsc.getString("name")));
-
         return countries;
-
     }
 
-    public void delete(int filmId) throws SQLException {
-        Connection connection = MyConnection.getConnection();
-        connection.setAutoCommit(false);
-        PreparedStatement delFilmCountriesST = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM);
-        delFilmCountriesST.setInt(1, filmId);
-        delFilmCountriesST.addBatch();
-        delFilmCountriesST.executeBatch();
-        connection.commit();
-        connection.close();
+    public void delete(int filmId) {
+        try {
+            Connection connection = MyConnection.getConnection();
+
+            connection.setAutoCommit(false);
+            PreparedStatement delFilmCountriesST = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM);
+            delFilmCountriesST.setInt(1, filmId);
+            delFilmCountriesST.addBatch();
+            delFilmCountriesST.executeBatch();
+            connection.commit();
+            connection.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
     }
 }
