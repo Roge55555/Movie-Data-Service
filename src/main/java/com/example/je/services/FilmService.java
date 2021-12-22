@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -19,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class FilmService {
@@ -43,14 +45,23 @@ public class FilmService {
         int end;
         Page page = new Page();
 
+        Properties props = new Properties();
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = classloader.getResourceAsStream("application.properties");
+        try {
+            props.load(inputStream);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
         do {
             pageNumber++;
 
             try {
-                URL urldemo = new URL("https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_250_BEST_FILMS&page=" + pageNumber);
+                URL urldemo = new URL(props.getProperty("kp.url") + pageNumber);
 
                 URLConnection yc = urldemo.openConnection();
-                yc.setRequestProperty("X-API-KEY", "2c2c61fe-07c5-47d2-9ce0-f3f6ad187b7e");
+                yc.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
                 String inputLine = in.readLine();
