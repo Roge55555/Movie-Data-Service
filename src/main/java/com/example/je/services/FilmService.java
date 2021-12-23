@@ -84,12 +84,13 @@ public class FilmService {
 
         List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
 
-        try {
-            Connection connection = MyConnection.getConnection();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement checkST = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
+             PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
+             PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM)) {
+
             connection.setAutoCommit(false);
-            PreparedStatement checkST = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
-            PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
-            PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM);
+
 
             for (Film film : films) {
 
@@ -136,8 +137,6 @@ public class FilmService {
                 }
             }
 
-            connection.close();
-
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
         }
@@ -146,15 +145,15 @@ public class FilmService {
     }
 
     public Film getFilm(Long getIndex) {
-        try {
-            Connection connection = MyConnection.getConnection();
-            PreparedStatement getFST = connection.prepareStatement(Queries.GET_FILM);
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement getFST = connection.prepareStatement(Queries.GET_FILM)){
+
             getFST.setInt(1, getIndex.intValue());
             ResultSet rsf = getFST.executeQuery();
 
             if (rsf.next()) {
 
-                Film film = Film.builder()
+                return Film.builder()
                         .filmId((long) rsf.getInt("id"))
                         .nameRu(rsf.getString("name_ru"))
                         .nameEn(rsf.getString("name_en"))
@@ -164,15 +163,9 @@ public class FilmService {
                         .ratingVoteCount((long) rsf.getInt("rating_vote_count"))
                         .posterUrl(rsf.getString("poster_url"))
                         .posterUrlPreview(rsf.getString("poster_url_preview")).build();
-
-                connection.close();
-
-                return film;
             }
             else {
                 System.out.println("No such film - " + getIndex);
-
-                connection.close();
 
                 return null;
             }
@@ -184,16 +177,11 @@ public class FilmService {
     }
 
     public void deleteFilm(Long delIndex) {
-        try {
-            Connection connection = MyConnection.getConnection();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement delF = connection.prepareStatement(Queries.DELETE_FILM)){
 
-            connection.setAutoCommit(false);
-            PreparedStatement delF = connection.prepareStatement(Queries.DELETE_FILM);
             delF.setInt(1, delIndex.intValue());
-            delF.addBatch();
-            delF.executeBatch();
-            connection.commit();
-            connection.close();
+            delF.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());

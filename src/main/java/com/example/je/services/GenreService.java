@@ -28,11 +28,9 @@ public class GenreService {
     }
 
     public void saveGenre(List<FilmCountryGenre> filmCountryGenreList) {
-        try {
-            Connection connection = MyConnection.getConnection();
-
-            PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
-            PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM);
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+             PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -57,7 +55,6 @@ public class GenreService {
             addFilmGenresST.executeBatch();
             updateFilmGenresST.executeBatch();
             connection.commit();
-            connection.close();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
@@ -66,10 +63,9 @@ public class GenreService {
 
     public List<Genre> get(int filmId) {
         List<Genre> genres = new ArrayList<>();
-        try {
-            Connection connection = MyConnection.getConnection();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM)) {
 
-            PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM);
             getFilmGenresST.setInt(1, filmId);
             ResultSet rsg = getFilmGenresST.executeQuery();
             connection.close();
@@ -89,16 +85,15 @@ public class GenreService {
     }
 
     public void delete(int filmId) {
-        try {
-            Connection connection = MyConnection.getConnection();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
 
             connection.setAutoCommit(false);
-            PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM);
+
             delFilmGenresST.setInt(1, filmId);
             delFilmGenresST.addBatch();
             delFilmGenresST.executeBatch();
             connection.commit();
-            connection.close();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
