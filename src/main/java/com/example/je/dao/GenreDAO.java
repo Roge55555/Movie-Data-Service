@@ -84,12 +84,8 @@ public class GenreDAO {
         try (Connection connection = MyConnection.getConnection();
              PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
 
-            connection.setAutoCommit(false);
-
             delFilmGenresST.setInt(1, filmId);
-            delFilmGenresST.addBatch();
-            delFilmGenresST.executeBatch();
-            connection.commit();
+            delFilmGenresST.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());

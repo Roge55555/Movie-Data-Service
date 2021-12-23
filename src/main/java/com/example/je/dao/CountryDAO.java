@@ -84,12 +84,8 @@ public class CountryDAO {
         try (Connection connection = MyConnection.getConnection();
              PreparedStatement delFilmCountriesST = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM)) {
 
-            connection.setAutoCommit(false);
-
             delFilmCountriesST.setInt(1, filmId);
-            delFilmCountriesST.addBatch();
-            delFilmCountriesST.executeBatch();
-            connection.commit();
+            delFilmCountriesST.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
