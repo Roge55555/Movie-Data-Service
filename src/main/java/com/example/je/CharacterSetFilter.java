@@ -8,9 +8,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 
-
 public class CharacterSetFilter implements Filter {
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

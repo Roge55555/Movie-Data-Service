@@ -19,10 +19,10 @@ public class DeleteServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-            Long delId = Long.valueOf(req.getReader().lines().collect(Collectors.toList()).get(0));
-        countryService.delete(delId.intValue());
-        genreService.delete(delId.intValue());
-        filmService.deleteFilm(delId);
+        Long deleteId = Long.valueOf(req.getReader().lines().collect(Collectors.toList()).get(0));
+        countryService.delete(deleteId.intValue());
+        genreService.delete(deleteId.intValue());
+        filmService.deleteFilm(deleteId);
 
     }
 }

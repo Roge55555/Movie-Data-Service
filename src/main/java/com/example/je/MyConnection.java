@@ -16,7 +16,6 @@ public class MyConnection {
     private String connectionUrl;
     private String jdbcDriver;
 
-
     private MyConnection() {
         try {
             Properties props = new Properties();

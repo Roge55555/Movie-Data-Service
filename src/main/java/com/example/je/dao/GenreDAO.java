@@ -29,8 +29,8 @@ public class GenreDAO {
 
     public void saveAllGenres(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement addFilmGenresST = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
-             PreparedStatement updateFilmGenresST = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
+             PreparedStatement addFilmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+             PreparedStatement updateFilmGenresStatement = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -39,21 +39,21 @@ public class GenreDAO {
                     deleteGenre(filmCountryGenre.getFilmId().intValue());
 
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        updateFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        updateFilmGenresST.setString(2, genre.getGenre());
-                        updateFilmGenresST.addBatch();
+                        updateFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        updateFilmGenresStatement.setString(2, genre.getGenre());
+                        updateFilmGenresStatement.addBatch();
                     }
                 } else {
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        addFilmGenresST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        addFilmGenresST.setString(2, genre.getGenre());
-                        addFilmGenresST.addBatch();
+                        addFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        addFilmGenresStatement.setString(2, genre.getGenre());
+                        addFilmGenresStatement.addBatch();
                     }
                 }
             }
 
-            addFilmGenresST.executeBatch();
-            updateFilmGenresST.executeBatch();
+            addFilmGenresStatement.executeBatch();
+            updateFilmGenresStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {
@@ -64,14 +64,14 @@ public class GenreDAO {
     public List<Genre> getGenre(int filmId) {
         List<Genre> genres = new ArrayList<>();
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement getFilmGenresST = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM)) {
+             PreparedStatement getFilmGenresStatement = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM)) {
 
-            getFilmGenresST.setInt(1, filmId);
-            ResultSet rsg = getFilmGenresST.executeQuery();
+            getFilmGenresStatement.setInt(1, filmId);
+            ResultSet resultSetGenre = getFilmGenresStatement.executeQuery();
             connection.close();
 
-            while (rsg.next())
-                genres.add(new Genre(rsg.getString("name")));
+            while (resultSetGenre.next())
+                genres.add(new Genre(resultSetGenre.getString("name")));
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
@@ -82,10 +82,10 @@ public class GenreDAO {
 
     public void deleteGenre(int filmId) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement delFilmGenresST = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
+             PreparedStatement deleteFilmGenresStatement = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
 
-            delFilmGenresST.setInt(1, filmId);
-            delFilmGenresST.execute();
+            deleteFilmGenresStatement.setInt(1, filmId);
+            deleteFilmGenresStatement.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());

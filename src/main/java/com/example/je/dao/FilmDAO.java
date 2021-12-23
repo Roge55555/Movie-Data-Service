@@ -31,51 +31,51 @@ public class FilmDAO {
         List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
 
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement checkST = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
-             PreparedStatement addFilmST = connection.prepareStatement(Queries.INSERT_FILM);
-             PreparedStatement updateFilmST = connection.prepareStatement(Queries.UPDATE_FILM)) {
+             PreparedStatement checkStatement = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
+             PreparedStatement addFilmStatement = connection.prepareStatement(Queries.INSERT_FILM);
+             PreparedStatement updateFilmStatement = connection.prepareStatement(Queries.UPDATE_FILM)) {
 
             connection.setAutoCommit(false);
 
 
             for (Film film : films) {
 
-                checkST.setString(1, film.getNameEn());
-                checkST.setString(2, film.getNameRu());
-                checkST.setInt(3, film.getFilmId().intValue());
-                ResultSet rsf = checkST.executeQuery();
+                checkStatement.setString(1, film.getNameEn());
+                checkStatement.setString(2, film.getNameRu());
+                checkStatement.setInt(3, film.getFilmId().intValue());
+                ResultSet resultSetFilm = checkStatement.executeQuery();
 
-                if (rsf.next()) {
-                    updateFilmST.setInt(9, film.getFilmId().intValue());
-                    updateFilmST.setString(1, film.getNameRu());
-                    updateFilmST.setString(2, film.getNameEn());
-                    updateFilmST.setString(3, film.getYear());
-                    updateFilmST.setString(4, film.getFilmLength());
-                    updateFilmST.setString(5, film.getRating());
-                    updateFilmST.setInt(6, film.getRatingVoteCount().intValue());
-                    updateFilmST.setString(7, film.getPosterUrl());
-                    updateFilmST.setString(8, film.getPosterUrlPreview());
-                    updateFilmST.addBatch();
+                if (resultSetFilm.next()) {
+                    updateFilmStatement.setInt(9, film.getFilmId().intValue());
+                    updateFilmStatement.setString(1, film.getNameRu());
+                    updateFilmStatement.setString(2, film.getNameEn());
+                    updateFilmStatement.setString(3, film.getYear());
+                    updateFilmStatement.setString(4, film.getFilmLength());
+                    updateFilmStatement.setString(5, film.getRating());
+                    updateFilmStatement.setInt(6, film.getRatingVoteCount().intValue());
+                    updateFilmStatement.setString(7, film.getPosterUrl());
+                    updateFilmStatement.setString(8, film.getPosterUrlPreview());
+                    updateFilmStatement.addBatch();
 
-                    updateFilmST.executeBatch();
+                    updateFilmStatement.executeBatch();
                     connection.commit();
 
                     filmCountryGenreList.add(new FilmCountryGenre(film.getFilmId(), film.getCountries(), film.getGenres(), true));
 
                 } else {
 
-                    addFilmST.setInt(1, film.getFilmId().intValue());
-                    addFilmST.setString(2, film.getNameRu());
-                    addFilmST.setString(3, film.getNameEn());
-                    addFilmST.setString(4, film.getYear());
-                    addFilmST.setString(5, film.getFilmLength());
-                    addFilmST.setString(6, film.getRating());
-                    addFilmST.setInt(7, film.getRatingVoteCount().intValue());
-                    addFilmST.setString(8, film.getPosterUrl());
-                    addFilmST.setString(9, film.getPosterUrlPreview());
-                    addFilmST.addBatch();
+                    addFilmStatement.setInt(1, film.getFilmId().intValue());
+                    addFilmStatement.setString(2, film.getNameRu());
+                    addFilmStatement.setString(3, film.getNameEn());
+                    addFilmStatement.setString(4, film.getYear());
+                    addFilmStatement.setString(5, film.getFilmLength());
+                    addFilmStatement.setString(6, film.getRating());
+                    addFilmStatement.setInt(7, film.getRatingVoteCount().intValue());
+                    addFilmStatement.setString(8, film.getPosterUrl());
+                    addFilmStatement.setString(9, film.getPosterUrlPreview());
+                    addFilmStatement.addBatch();
 
-                    addFilmST.executeBatch();
+                    addFilmStatement.executeBatch();
                     connection.commit();
 
                     filmCountryGenreList.add(new FilmCountryGenre(film.getFilmId(), film.getCountries(), film.getGenres(), false));
@@ -91,23 +91,23 @@ public class FilmDAO {
     }
     public Film getFilm(Long filmId) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement getFST = connection.prepareStatement(Queries.GET_FILM)){
+             PreparedStatement getFilmStatement = connection.prepareStatement(Queries.GET_FILM)){
 
-            getFST.setInt(1, filmId.intValue());
-            ResultSet rsf = getFST.executeQuery();
+            getFilmStatement.setInt(1, filmId.intValue());
+            ResultSet resultSetFilm = getFilmStatement.executeQuery();
 
-            if (rsf.next()) {
+            if (resultSetFilm.next()) {
 
                 return Film.builder()
-                        .filmId((long) rsf.getInt("id"))
-                        .nameRu(rsf.getString("name_ru"))
-                        .nameEn(rsf.getString("name_en"))
-                        .year(rsf.getString("year"))
-                        .filmLength(rsf.getString("length"))
-                        .rating(rsf.getString("rating"))
-                        .ratingVoteCount((long) rsf.getInt("rating_vote_count"))
-                        .posterUrl(rsf.getString("poster_url"))
-                        .posterUrlPreview(rsf.getString("poster_url_preview")).build();
+                        .filmId((long) resultSetFilm.getInt("id"))
+                        .nameRu(resultSetFilm.getString("name_ru"))
+                        .nameEn(resultSetFilm.getString("name_en"))
+                        .year(resultSetFilm.getString("year"))
+                        .filmLength(resultSetFilm.getString("length"))
+                        .rating(resultSetFilm.getString("rating"))
+                        .ratingVoteCount((long) resultSetFilm.getInt("rating_vote_count"))
+                        .posterUrl(resultSetFilm.getString("poster_url"))
+                        .posterUrlPreview(resultSetFilm.getString("poster_url_preview")).build();
             }
             else {
                 System.out.println("No such film - " + filmId);
@@ -123,10 +123,10 @@ public class FilmDAO {
     }
     public void deleteFilm(Long filmId) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement delF = connection.prepareStatement(Queries.DELETE_FILM)){
+             PreparedStatement deleteFilmStatement = connection.prepareStatement(Queries.DELETE_FILM)){
 
-            delF.setInt(1, filmId.intValue());
-            delF.execute();
+            deleteFilmStatement.setInt(1, filmId.intValue());
+            deleteFilmStatement.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());

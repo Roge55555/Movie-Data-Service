@@ -29,8 +29,8 @@ public class CountryDAO {
 
     public void saveAllCountries(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement addFilmCountriesST = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
-             PreparedStatement updateFilmCountriesST = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM)) {
+             PreparedStatement addFilmCountriesStatement = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
+             PreparedStatement updateFilmCountriesStatement = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -39,21 +39,21 @@ public class CountryDAO {
                     deleteCountry(filmCountryGenre.getFilmId().intValue());
 
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        updateFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        updateFilmCountriesST.setString(2, country.getCountry());
-                        updateFilmCountriesST.addBatch();
+                        updateFilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        updateFilmCountriesStatement.setString(2, country.getCountry());
+                        updateFilmCountriesStatement.addBatch();
                     }
                 } else {
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        addFilmCountriesST.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        addFilmCountriesST.setString(2, country.getCountry());
-                        addFilmCountriesST.addBatch();
+                        addFilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        addFilmCountriesStatement.setString(2, country.getCountry());
+                        addFilmCountriesStatement.addBatch();
                     }
                 }
             }
 
-            addFilmCountriesST.executeBatch();
-            updateFilmCountriesST.executeBatch();
+            addFilmCountriesStatement.executeBatch();
+            updateFilmCountriesStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {
@@ -64,14 +64,14 @@ public class CountryDAO {
     public List<Country> getCountry(int filmId) {
         List<Country> countries = new ArrayList<>();
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement getFilmCountriesST = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM)) {
+             PreparedStatement getFilmCountriesStatement = MyConnection.getConnection().prepareStatement(Queries.GET_COUNTRY_IN_FILM)) {
 
-            getFilmCountriesST.setInt(1, filmId);
-            ResultSet rsc = getFilmCountriesST.executeQuery();
+            getFilmCountriesStatement.setInt(1, filmId);
+            ResultSet resultSetCountry = getFilmCountriesStatement.executeQuery();
             connection.close();
 
-            while (rsc.next())
-                countries.add(new Country(rsc.getString("name")));
+            while (resultSetCountry.next())
+                countries.add(new Country(resultSetCountry.getString("name")));
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
@@ -82,10 +82,10 @@ public class CountryDAO {
 
     public void deleteCountry(int filmId) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement delFilmCountriesST = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM)) {
+             PreparedStatement deleteFilmCountriesStatement = connection.prepareStatement(Queries.DELETE_COUNTRY_IN_FILM)) {
 
-            delFilmCountriesST.setInt(1, filmId);
-            delFilmCountriesST.execute();
+            deleteFilmCountriesStatement.setInt(1, filmId);
+            deleteFilmCountriesStatement.execute();
 
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
