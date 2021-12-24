@@ -18,12 +18,10 @@ public class LoadServlet extends HttpServlet {
     private final GenreService genreService = GenreService.getService();
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
-
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         List<Film> films = filmService.loadFilms();
         List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
         countryService.saveCountry(filmCountryGenreList);
         genreService.saveGenre(filmCountryGenreList);
     }
 }
-
