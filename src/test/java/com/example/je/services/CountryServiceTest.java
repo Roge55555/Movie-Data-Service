@@ -1,63 +1,32 @@
 package com.example.je.services;
 
-import com.example.je.MyConnection;
+import com.example.je.dao.CountryDAO;
 import com.example.je.model.Country;
-import com.example.je.model.Film;
 import com.example.je.model.FilmCountryGenre;
-import org.h2.tools.RunScript;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@ExtendWith(MockitoExtension.class)
 class CountryServiceTest {
 
-    CountryService countryService = CountryService.getService();
-    FilmService filmService = FilmService.getService();
+    @InjectMocks
+    CountryService countryService;
 
-    private static Connection connection;
-
-    static {
-        try {
-            connection = MyConnection.getConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    @BeforeAll
-    static void beforeAll() throws SQLException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream schemaIS = classloader.getResourceAsStream("schema.sql");
-        InputStream dataIS = classloader.getResourceAsStream("data.sql");
-
-        if (schemaIS != null) {
-            RunScript.execute(connection, new InputStreamReader(schemaIS));
-        }
-        if (dataIS != null) {
-            RunScript.execute(connection, new InputStreamReader(dataIS));
-        }
-    }
-
-    @AfterAll
-    static void afterAll() throws SQLException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream clearIS = classloader.getResourceAsStream("clear.sql");
-        if (clearIS != null) {
-            RunScript.execute(connection, new InputStreamReader(clearIS));
-        }
-    }
+    @Mock
+    CountryDAO countryDAO;
 
     private FilmCountryGenre newData(Long filmId, Boolean isExist) {
         List<Country> countryList = new ArrayList<>();
@@ -72,45 +41,47 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("Add countries of film to db by film id")
-    void addCountry() {
-        List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
-        filmCountryGenreList.add(newData(72L, false));
-        filmCountryGenreList.add(newData(31L, false));
-
-        List<Film> filmList = new ArrayList<>();
-        filmList.add(Film.builder().filmId(72L).nameEn("Test film 1").ratingVoteCount(3000L).build());
-        filmList.add(Film.builder().filmId(31L).nameEn("Test film 2").ratingVoteCount(3000L).build());
-        filmService.saveFilms(filmList);
-
-        countryService.saveCountry(filmCountryGenreList);
-        assertAll(() -> assertEquals(newData(null, null).getCountryList(), countryService.get(31)),
-                () -> assertEquals(newData(null, null).getCountryList(), countryService.get(72)));
-    }
-
-    @Test
-    @DisplayName("Update countries of film in db by film id")
-    void updateCountry() {
+    @DisplayName("Save countries of film by film id")
+    void saveCountry() {
         List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
         filmCountryGenreList.add(newData(3442L, true));
 
         countryService.saveCountry(filmCountryGenreList);
-        assertEquals(newData(null, null).getCountryList(), countryService.get(3442));
+
+        Mockito.verify(countryDAO, Mockito.times(1)).saveAllCountries(ArgumentMatchers.anyList());
     }
 
     @Test
-    @DisplayName("Get countries of film from db by film id")
+    @DisplayName("Get countries of film by film id")
     void get() {
         List<Country> countryList = new ArrayList<>();
         countryList.add(new Country("США"));
         countryList.add(new Country("Новая Зеландия"));
-        assertEquals(countryList, countryService.get(328));
+
+//        CountryDAO countryDAO = Mockito.mock(CountryDAO.class);
+        Mockito.when(countryDAO.getCountry(ArgumentMatchers.anyInt())).thenReturn(countryList);
+        List<Country> getCountryList = countryService.get(34444);
+
+        assertEquals(2, getCountryList.size());
+        Mockito.verify(countryDAO, Mockito.times(1)).getCountry(ArgumentMatchers.anyInt());
     }
 
     @Test
-    @DisplayName("Delete countries of film from db by film id")
+    @DisplayName("Get null cause no countries connected to such film id")
+    void getEmptyList() {
+        List<Country> countryList = new ArrayList<>();
+        Mockito.when(countryDAO.getCountry(ArgumentMatchers.anyInt())).thenReturn(countryList);
+        List<Country> getCountryList = countryService.get(8676);
+
+        assertNull(getCountryList);
+        Mockito.verify(countryDAO, Mockito.times(1)).getCountry(ArgumentMatchers.anyInt());
+    }
+
+    @Test
+    @DisplayName("Delete countries of film by film id")
     void delete() {
         countryService.delete(688);
-        assertNull(countryService.get(688));
+
+        Mockito.verify(countryDAO, Mockito.times(1)).deleteCountry(ArgumentMatchers.anyInt());
     }
 }

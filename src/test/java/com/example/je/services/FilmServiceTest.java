@@ -1,60 +1,34 @@
 package com.example.je.services;
 
-import com.example.je.MyConnection;
+import com.example.je.dao.FilmDAO;
 import com.example.je.model.Film;
-import org.h2.tools.RunScript;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.example.je.model.Page;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(MockitoExtension.class)
 class FilmServiceTest {
 
-    FilmService filmService = FilmService.getService();
+    @Mock
+    FilmDAO filmDAO;
 
-    private static Connection connection;
+    @Mock
+    PageService pageService;
 
-    static {
-        try {
-            connection = MyConnection.getConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    @BeforeAll
-    static void beforeAll() throws SQLException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream schemaIS = classloader.getResourceAsStream("schema.sql");
-        InputStream dataIS = classloader.getResourceAsStream("data.sql");
-
-        if (schemaIS != null) {
-            RunScript.execute(connection, new InputStreamReader(schemaIS));
-        }
-        if (dataIS != null) {
-            RunScript.execute(connection, new InputStreamReader(dataIS));
-        }
-    }
-
-    @AfterAll
-    static void afterAll() throws SQLException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream clearIS = classloader.getResourceAsStream("clear.sql");
-        if (clearIS != null) {
-            RunScript.execute(connection, new InputStreamReader(clearIS));
-        }
-    }
+    @InjectMocks
+    FilmService filmService;
 
     private Film newFilm(Long id, String nameRu, String nameEn) {
 
@@ -75,56 +49,42 @@ class FilmServiceTest {
     @DisplayName("Load all 250 films in list")
     void loadFilms() {
         List<Film> top250;
+        int numberOfPages = 13;
 
+        Mockito.doCallRealMethod().when(pageService).addFilms(ArgumentMatchers.any(Page.class), ArgumentMatchers.anyList());
         top250 = filmService.loadFilms();
+
+
         assertEquals(250, top250.size());
+        Mockito.verify(pageService, Mockito.times(numberOfPages)).addFilms(ArgumentMatchers.any(Page.class), ArgumentMatchers.anyList());
     }
 
     @Test
-    @DisplayName("Add film in db")
+    @DisplayName("Save film(s)")
     void addFilms() {
         List<Film> filmsAdd = new ArrayList<>();
         filmsAdd.add(newFilm(8L, null, "4400"));
 
         filmService.saveFilms(filmsAdd);
-        assertEquals(newFilm(8L, null, "4400"), filmService.getFilm(8L));
+
+        Mockito.verify(filmDAO, Mockito.times(1)).saveAllFilms(ArgumentMatchers.anyList());
     }
 
     @Test
-    @DisplayName("Update film in db")
-    void updateFilms() {
-        Film updateFilm = filmService.getFilm(361L);
-        updateFilm.setNameEn("fight club");
-        updateFilm.setFilmLength("02:31");
-        List<Film> filmsUpdate = new ArrayList<>();
-        filmsUpdate.add(updateFilm);
-
-        filmService.saveFilms(filmsUpdate);
-        assertEquals(updateFilm, filmService.getFilm(361L));
-    }
-
-    @Test
-    @DisplayName("Get film from db by id")
+    @DisplayName("Get film by id")
     void getFilm() {
-        List<Film> filmsGet = new ArrayList<>();
-        filmsGet.add(newFilm(6L, null, "12 chairs"));
-        filmsGet.add(newFilm(13L, "Король лев", null));
-        filmsGet.add(newFilm(92L, "За гранью", null));
-        filmService.saveFilms(filmsGet);
+        Mockito.when(filmDAO.getFilm(ArgumentMatchers.anyLong())).thenReturn(newFilm(6L, null, "12 chairs"));
+        Film film = filmService.getFilm(6546L);
 
-        assertAll(() -> assertEquals(filmsGet.get(0), filmService.getFilm(6L)),
-                () -> assertEquals(filmsGet.get(1), filmService.getFilm(13L)),
-                () -> assertEquals(filmsGet.get(2), filmService.getFilm(92L)));
+        assertNotNull(film);
+        Mockito.verify(filmDAO, Mockito.times(1)).getFilm(ArgumentMatchers.anyLong());
     }
 
     @Test
-    @DisplayName("Delete film from db by id")
+    @DisplayName("Delete film by id")
     void deleteFilm() {
-        List<Film> filmsGet = new ArrayList<>();
-        filmsGet.add(newFilm(64L, "А зори здесь тихие", null));
-        filmService.saveFilms(filmsGet);
+        filmService.deleteFilm(641564L);
 
-        filmService.deleteFilm(64L);
-        assertNull(filmService.getFilm(64L));
+        Mockito.verify(filmDAO, Mockito.times(1)).deleteFilm(ArgumentMatchers.anyLong());
     }
 }

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -21,17 +22,25 @@ public class FilmService {
 
     private static FilmService filmService = null;
 
-    private final PageService pageService = PageService.getService();
+    private final PageService pageService;
 
-    private final FilmDAO filmDAO = FilmDAO.getDAO();
+    private final FilmDAO filmDAO;
 
-    private FilmService() {
+    private FilmService(FilmDAO filmDAO, PageService pageService) {
         System.out.println("filmservice init");
+        if (Objects.isNull(filmDAO) && Objects.isNull(pageService)) {
+            this.filmDAO = FilmDAO.getDAO();
+            this.pageService = PageService.getService();
+        }
+        else {
+            this.filmDAO = filmDAO;
+            this.pageService = pageService;
+        }
     }
 
     public static FilmService getService() {
         if (filmService == null) {
-            filmService = new FilmService();
+            filmService = new FilmService(null, null);
         }
         return filmService;
     }

@@ -5,20 +5,25 @@ import com.example.je.model.Country;
 import com.example.je.model.FilmCountryGenre;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CountryService {
 
     private static CountryService countryService = null;
 
-    private final CountryDAO countryDAO = CountryDAO.getDAO();
+    private final CountryDAO countryDAO;
 
-    private CountryService() {
+    private CountryService(CountryDAO countryDAO) {
         System.out.println("countryservice init");
+        if (Objects.isNull(countryDAO))
+            this.countryDAO = CountryDAO.getDAO();
+        else
+            this.countryDAO = countryDAO;
     }
 
     public static CountryService getService() {
         if (countryService == null) {
-            countryService = new CountryService();
+            countryService = new CountryService(null);
         }
         return countryService;
     }
