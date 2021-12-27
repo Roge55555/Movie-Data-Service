@@ -3,7 +3,6 @@ package com.example.je.services;
 import com.example.je.dao.CountryDAO;
 import com.example.je.model.Country;
 import com.example.je.model.FilmCountryGenre;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +57,6 @@ class CountryServiceTest {
         countryList.add(new Country("США"));
         countryList.add(new Country("Новая Зеландия"));
 
-//        CountryDAO countryDAO = Mockito.mock(CountryDAO.class);
         Mockito.when(countryDAO.getCountry(ArgumentMatchers.anyInt())).thenReturn(countryList);
         List<Country> getCountryList = countryService.get(34444);
 
