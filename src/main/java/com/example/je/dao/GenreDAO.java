@@ -1,0 +1,95 @@
+package com.example.je.dao;
+
+import com.example.je.MyConnection;
+import com.example.je.Queries;
+import com.example.je.model.FilmCountryGenre;
+import com.example.je.model.Genre;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenreDAO {
+
+    private static GenreDAO genreDAO = null;
+
+    private GenreDAO() {
+        System.out.println("genredao init");
+    }
+
+    public static GenreDAO getDAO() {
+        if (genreDAO == null) {
+            genreDAO = new GenreDAO();
+        }
+        return genreDAO;
+    }
+
+    public void saveAllGenres(List<FilmCountryGenre> filmCountryGenreList) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement addFilmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
+             PreparedStatement updateFilmGenresStatement = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
+
+            connection.setAutoCommit(false);
+            for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
+
+                if (filmCountryGenre.getIsExist()) {
+                    deleteGenre(filmCountryGenre.getFilmId().intValue());
+
+                    for (Genre genre : filmCountryGenre.getGenreList()) {
+                        updateFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        updateFilmGenresStatement.setString(2, genre.getGenre());
+                        updateFilmGenresStatement.addBatch();
+                    }
+                } else {
+                    for (Genre genre : filmCountryGenre.getGenreList()) {
+                        addFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        addFilmGenresStatement.setString(2, genre.getGenre());
+                        addFilmGenresStatement.addBatch();
+                    }
+                }
+            }
+
+            addFilmGenresStatement.executeBatch();
+            updateFilmGenresStatement.executeBatch();
+            connection.commit();
+
+        } catch (SQLException throwables) {
+            System.out.println(throwables.getMessage());
+        }
+    }
+
+    public List<Genre> getGenre(int filmId) {
+        List<Genre> genres = new ArrayList<>();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement getFilmGenresStatement = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM)) {
+
+            getFilmGenresStatement.setInt(1, filmId);
+            ResultSet resultSetGenre = getFilmGenresStatement.executeQuery();
+            connection.close();
+
+            while (resultSetGenre.next())
+                genres.add(new Genre(resultSetGenre.getString("name")));
+
+        } catch (SQLException throwables) {
+            System.out.println(throwables.getMessage());
+        }
+
+        return genres;
+    }
+
+    public void deleteGenre(int filmId) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement deleteFilmGenresStatement = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
+
+            deleteFilmGenresStatement.setInt(1, filmId);
+            deleteFilmGenresStatement.execute();
+
+        } catch (SQLException throwables) {
+            System.out.println(throwables.getMessage());
+        }
+
+    }
+}
