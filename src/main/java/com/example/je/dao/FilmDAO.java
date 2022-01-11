@@ -1,7 +1,8 @@
 package com.example.je.dao;
 
-import com.example.je.MyConnection;
 import com.example.je.Queries;
+import com.example.je.db.ConnectionFactory;
+import com.example.je.db.impl.MySQLFactory;
 import com.example.je.model.Film;
 import com.example.je.model.FilmCountryGenre;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class FilmDAO {
 
     private static FilmDAO filmDAO = null;
+
+    private final ConnectionFactory factory = new MySQLFactory();
 
     private FilmDAO() {
         System.out.println("filmdao init");
@@ -30,7 +33,7 @@ public class FilmDAO {
     public List<FilmCountryGenre> saveAllFilms(List<Film> films) {
         List<FilmCountryGenre> filmCountryGenreList = new ArrayList<>();
 
-        try (Connection connection = MyConnection.getConnection();
+        try (Connection connection = factory.getConnection("mysql");
              PreparedStatement checkStatement = connection.prepareStatement(Queries.INSERT_CHECK_EXISTING_FILM);
              PreparedStatement addFilmStatement = connection.prepareStatement(Queries.INSERT_FILM);
              PreparedStatement updateFilmStatement = connection.prepareStatement(Queries.UPDATE_FILM)) {
@@ -90,7 +93,7 @@ public class FilmDAO {
         return filmCountryGenreList;
     }
     public Film getFilm(Long filmId) {
-        try (Connection connection = MyConnection.getConnection();
+        try (Connection connection = factory.getConnection("mysql");
              PreparedStatement getFilmStatement = connection.prepareStatement(Queries.GET_FILM)){
 
             getFilmStatement.setInt(1, filmId.intValue());
@@ -122,7 +125,7 @@ public class FilmDAO {
         return null;
     }
     public void deleteFilm(Long filmId) {
-        try (Connection connection = MyConnection.getConnection();
+        try (Connection connection = factory.getConnection("mysql");
              PreparedStatement deleteFilmStatement = connection.prepareStatement(Queries.DELETE_FILM)){
 
             deleteFilmStatement.setInt(1, filmId.intValue());

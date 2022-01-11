@@ -1,7 +1,7 @@
 package com.example.je.dao;
 
-import com.example.je.MyConnection;
 import com.example.je.Queries;
+import com.example.je.db.impl.MySQLFactory;
 import com.example.je.model.FilmCountryGenre;
 import com.example.je.model.Genre;
 
@@ -16,6 +16,8 @@ public class GenreDAO {
 
     private static GenreDAO genreDAO = null;
 
+    private final MySQLFactory factory = new MySQLFactory();
+
     private GenreDAO() {
         System.out.println("genredao init");
     }
@@ -28,7 +30,7 @@ public class GenreDAO {
     }
 
     public void saveAllGenres(List<FilmCountryGenre> filmCountryGenreList) {
-        try (Connection connection = MyConnection.getConnection();
+        try (Connection connection = factory.getConnection("mysql");
              PreparedStatement addFilmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
              PreparedStatement updateFilmGenresStatement = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
 
@@ -63,8 +65,8 @@ public class GenreDAO {
 
     public List<Genre> getGenre(int filmId) {
         List<Genre> genres = new ArrayList<>();
-        try (Connection connection = MyConnection.getConnection();
-             PreparedStatement getFilmGenresStatement = MyConnection.getConnection().prepareStatement(Queries.GET_GENRE_IN_FILM)) {
+        try (Connection connection = factory.getConnection("mysql");
+             PreparedStatement getFilmGenresStatement = factory.getConnection("mysql").prepareStatement(Queries.GET_GENRE_IN_FILM)) {
 
             getFilmGenresStatement.setInt(1, filmId);
             ResultSet resultSetGenre = getFilmGenresStatement.executeQuery();
@@ -81,7 +83,7 @@ public class GenreDAO {
     }
 
     public void deleteGenre(int filmId) {
-        try (Connection connection = MyConnection.getConnection();
+        try (Connection connection = factory.getConnection("mysql");
              PreparedStatement deleteFilmGenresStatement = connection.prepareStatement(Queries.DELETE_GENRE_IN_FILM)) {
 
             deleteFilmGenresStatement.setInt(1, filmId);
