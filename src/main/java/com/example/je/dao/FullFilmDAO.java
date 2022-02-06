@@ -109,7 +109,7 @@ public class FullFilmDAO {
                 addFilmStatement.setInt(14, fullFilm.getRatingImdbVoteCount().intValue());
                 addFilmStatement.setObject(15, fullFilm.getRatingFilmCritics(), Types.DOUBLE);
                 addFilmStatement.setInt(16, fullFilm.getRatingFilmCriticsVoteCount().intValue());
-                addFilmStatement.setObject(17, fullFilm.getRatingAwait(), Types.DOUBLE);//null
+                addFilmStatement.setObject(17, fullFilm.getRatingAwait(), Types.DOUBLE);
                 addFilmStatement.setInt(18, fullFilm.getRatingAwaitCount().intValue());
                 addFilmStatement.setObject(19, fullFilm.getRatingRfCritics(), Types.DOUBLE);
                 addFilmStatement.setInt(20, fullFilm.getRatingRfCriticsVoteCount().intValue());
@@ -117,7 +117,7 @@ public class FullFilmDAO {
                 addFilmStatement.setInt(22, fullFilm.getYear().intValue());
                 addFilmStatement.setInt(23, fullFilm.getFilmLength().intValue());
                 addFilmStatement.setString(24, fullFilm.getSlogan());
-                addFilmStatement.setString(25, fullFilm.getDescription());//too long
+                addFilmStatement.setString(25, fullFilm.getDescription());
                 addFilmStatement.setString(26, fullFilm.getShortDescription());
                 addFilmStatement.setString(27, fullFilm.getEditorAnnotation());
                 addFilmStatement.setBoolean(28, fullFilm.getIsTicketsAvailable());
@@ -125,8 +125,8 @@ public class FullFilmDAO {
                 addFilmStatement.setString(30, fullFilm.getType());
                 addFilmStatement.setString(31, fullFilm.getRatingMpaa());
                 addFilmStatement.setString(32, fullFilm.getRatingAgeLimits());
-                addFilmStatement.setObject(33, fullFilm.getStartYear(), Types.INTEGER);//null
-                addFilmStatement.setObject(34, fullFilm.getEndYear(), Types.INTEGER);//null
+                addFilmStatement.setObject(33, fullFilm.getStartYear(), Types.INTEGER);
+                addFilmStatement.setObject(34, fullFilm.getEndYear(), Types.INTEGER);
                 addFilmStatement.setBoolean(35, fullFilm.getSerial());
                 addFilmStatement.setBoolean(36, fullFilm.getShortFilm());
                 addFilmStatement.setBoolean(37, fullFilm.getCompleted());
