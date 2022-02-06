@@ -132,6 +132,10 @@ public class FilmService {
         return filmDAO.getFilm(getIndex);
     }
 
+    public void banFilm(Long banIndex) {
+        filmDAO.banFilm(banIndex);
+    }
+
     public void deleteFilm(Long delIndex) {
         filmDAO.deleteFilm(delIndex);
     }

@@ -47,19 +47,12 @@ public class FilmServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
-        StringBuilder inputLine = new StringBuilder();
-        while (in.ready())
-            inputLine.append(in.readLine());
-        ObjectMapper mapper = new ObjectMapper();
-        List<Film> films = mapper.readValue(inputLine.toString(), Page.class).getFilms();
-        if (Objects.nonNull(films)) {
-            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(films);
-            countryService.saveCountry(filmCountryGenreList);
-            genreService.saveGenre(filmCountryGenreList);
+        long banId = Long.parseLong(req.getHttpServletMapping().getMatchValue());
+        if (banId > 0) {
+            filmService.banFilm(banId);
         }
         else {
-            resp.getWriter().write("No data!");
+            resp.getWriter().write("Error, id should be positive!");
         }
     }
 

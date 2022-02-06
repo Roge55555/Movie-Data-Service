@@ -21,6 +21,7 @@ public class Queries {
             "rating_good_review_vote_count = ?, rating_kinopoisk = ?, rating_kinopoisk_vote_count = ?, rating_imdb = ?, rating_imdb_vote_count = ?, rating_film_critics = ?, rating_film_critics_vote_count = ?, rating_await = ?, rating_await_count = ?, " +
             "rating_rf_critics = ?, rating_rf_criticsVoteCount = ?, web_url = ?, year = ?, length = ?, slogan = ?, description = ?, short_description = ?, editor_annotation = ?, is_tickets_available = ?, production_status = ?, type = ?, rating_mpaa = ?, rating_age_limits = ?, " +
             "start_year = ?, end_year = ?, serial = ?, short_film = ?, completed = ?, has_imax = ?, has_3d = ?, last_sync = ? where kinopoisk_id = ?";
+    public static final String BAN_FILM = "update film set is_blocked = ? where id = ?";
 
     public static final String DELETE_FILM = "delete from film where id = ?";
     public static final String DELETE_COUNTRY_IN_FILM = "delete from film_country where film_id = ?";

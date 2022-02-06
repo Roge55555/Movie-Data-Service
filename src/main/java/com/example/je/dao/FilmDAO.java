@@ -93,6 +93,7 @@ public class FilmDAO {
 
         return filmCountryGenreList;
     }
+
     public Film getFilm(Long filmId) {
         try (Connection connection = factory.getConnection("mysql");
              PreparedStatement getFilmStatement = connection.prepareStatement(Queries.GET_FILM)){
@@ -125,6 +126,29 @@ public class FilmDAO {
 
         return null;
     }
+
+    public void banFilm(Long filmId) {
+        try (Connection connection = factory.getConnection("mysql");
+             PreparedStatement checkFilmStatement = connection.prepareStatement(Queries.GET_FILM);
+             PreparedStatement banFilmStatement = connection.prepareStatement(Queries.BAN_FILM)){
+
+            checkFilmStatement.setInt(1, filmId.intValue());
+            ResultSet resultSetFilm = checkFilmStatement.executeQuery();
+
+            if (resultSetFilm.next()) {
+                banFilmStatement.setBoolean(1, !resultSetFilm.getBoolean("is_blocked"));
+                banFilmStatement.setInt(2, filmId.intValue());
+                banFilmStatement.execute();
+            }
+            else {
+                System.out.println("No such film - " + filmId);
+            }
+
+        } catch (SQLException throwables) {
+            System.out.println(throwables.getMessage());
+        }
+    }
+
     public void deleteFilm(Long filmId) {
         try (Connection connection = factory.getConnection("mysql");
              PreparedStatement deleteFilmStatement = connection.prepareStatement(Queries.DELETE_FILM)){
