@@ -1,8 +1,10 @@
 package com.example.je.services;
 
 import com.example.je.dao.FilmDAO;
+import com.example.je.dao.FullFilmDAO;
 import com.example.je.model.Film;
 import com.example.je.model.FilmCountryGenre;
+import com.example.je.model.FullFilm;
 import com.example.je.model.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,21 +28,25 @@ public class FilmService {
 
     private final FilmDAO filmDAO;
 
-    private FilmService(FilmDAO filmDAO, PageService pageService) {
+    private final FullFilmDAO fullFilmDAO;
+
+    private FilmService(FilmDAO filmDAO, PageService pageService, FullFilmDAO fullFilmDAO) {
         System.out.println("filmservice init");
-        if (Objects.isNull(filmDAO) && Objects.isNull(pageService)) {
+        if (Objects.isNull(filmDAO) && Objects.isNull(fullFilmDAO) && Objects.isNull(pageService)) {
             this.filmDAO = FilmDAO.getDAO();
+            this.fullFilmDAO = FullFilmDAO.getDAO();
             this.pageService = PageService.getService();
         }
         else {
             this.filmDAO = filmDAO;
+            this.fullFilmDAO = fullFilmDAO;
             this.pageService = pageService;
         }
     }
 
     public static FilmService getService() {
         if (filmService == null) {
-            filmService = new FilmService(null, null);
+            filmService = new FilmService(null, null, null);
         }
         return filmService;
     }
@@ -63,7 +69,7 @@ public class FilmService {
             pageNumber++;
 
             try {
-                URL urldemo = new URL(props.getProperty("kp.url") + pageNumber);
+                URL urldemo = new URL(props.getProperty("kp.top250.url") + pageNumber);
 
                 URLConnection yc = urldemo.openConnection();
                 yc.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
@@ -85,8 +91,41 @@ public class FilmService {
         return page.getFilms();
     }
 
+    public FullFilm loadFullFilm(Long id) {
+        Properties props = new Properties();
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = classloader.getResourceAsStream("application.properties");
+        FullFilm fullFilm = new FullFilm();
+
+        try {
+            props.load(inputStream);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            URL urldemo = new URL(props.getProperty("kp.film.url") + id);
+
+            URLConnection yc = urldemo.openConnection();
+            yc.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
+            String inputLine = in.readLine();
+            ObjectMapper mapper = new ObjectMapper();
+            fullFilm = mapper.readValue(inputLine, FullFilm.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return fullFilm;
+    }
+
     public List<FilmCountryGenre> saveFilms(List<Film> films) {
         return filmDAO.saveAllFilms(films);
+    }
+
+    public List<FilmCountryGenre> saveFilms(FullFilm fullFilm) {
+        return fullFilmDAO.saveFullFilm(fullFilm);
     }
 
     public Film getFilm(Long getIndex) {

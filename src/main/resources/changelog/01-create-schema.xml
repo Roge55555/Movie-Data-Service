@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+							http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="01" author="rogE">
+
+        <createTable tableName="film">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="name_ru" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="name_en" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="year" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="length" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating" type="double">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="rating_vote_count" type="bigint">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="poster_url" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="poster_url_preview" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="full_film">
+            <column name="kinopoisk_id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="imdb_id" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="name_ru" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="name_en" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="name_original" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="poster_url" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="poster_url_preview" type="varchar(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="reviews_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_good_review" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_good_review_vote_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_kinopoisk" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_kinopoisk_vote_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_imdb" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_imdb_vote_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_film_critics" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_film_critics_vote_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_await" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_await_count" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_rf_critics" type="double">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_rf_criticsVoteCount" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="web_url" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="year" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="length" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="slogan" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="description" type="longtext">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="short_description" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="editor_annotation" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="is_tickets_available" type="boolean"/>
+            <column name="production_status" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="rating_mpaa" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="rating_age_limits" type="varchar(255)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="start_year" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="end_year" type="bigint">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="serial" type="boolean"/>
+            <column name="short_film" type="boolean"/>
+            <column name="completed" type="boolean"/>
+            <column name="has_imax" type="boolean"/>
+            <column name="has_3d" type="boolean"/>
+            <column name="last_sync" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+
+        </createTable>
+
+        <createTable tableName="country">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="film_country">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="film_id" type="bigint">
+            <constraints nullable="false" foreignKeyName="fk_film_country_film" references="film(id)"/>
+            </column>
+            <column name="country_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_film_country_country" references="country(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="genre">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="film_genre">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="film_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_film_genre_film" references="film(id)"/>
+            </column>
+            <column name="genre_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_film_genre_genre" references="genre(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
