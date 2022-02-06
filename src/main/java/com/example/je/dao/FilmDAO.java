@@ -76,6 +76,7 @@ public class FilmDAO {
                     addFilmStatement.setInt(7, film.getRatingVoteCount().intValue());
                     addFilmStatement.setString(8, film.getPosterUrl());
                     addFilmStatement.setString(9, film.getPosterUrlPreview());
+                    addFilmStatement.setBoolean(10, false);
                     addFilmStatement.addBatch();
 
                     addFilmStatement.executeBatch();

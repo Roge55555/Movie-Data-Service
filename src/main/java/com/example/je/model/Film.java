@@ -1,5 +1,6 @@
 package com.example.je.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,5 +54,8 @@ public class Film {
 
     @JsonProperty("ratingChange")
     private Boolean ratingChange;
+
+    @JsonIgnore
+    private Boolean isBlocked;
 
 }

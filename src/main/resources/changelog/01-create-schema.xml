@@ -35,6 +35,7 @@
             <column name="poster_url_preview" type="varchar(255)">
                 <constraints nullable="true" unique="true"/>
             </column>
+            <column name="is_blocked" type="boolean"/>
         </createTable>
 
         <createTable tableName="full_film">
