@@ -31,8 +31,7 @@ public class CountryDAO {
 
     public void saveAllCountries(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = factory.getConnection("mysql");
-             PreparedStatement addFilmCountriesStatement = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM);
-             PreparedStatement updateFilmCountriesStatement = connection.prepareStatement(Queries.UPDATE_COUNTRY_IN_FILM)) {
+             PreparedStatement FilmCountriesStatement = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -41,21 +40,20 @@ public class CountryDAO {
                     deleteCountry(filmCountryGenre.getFilmId().intValue());
 
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        updateFilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        updateFilmCountriesStatement.setString(2, country.getCountry());
-                        updateFilmCountriesStatement.addBatch();
+                        FilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        FilmCountriesStatement.setString(2, country.getCountry());
+                        FilmCountriesStatement.addBatch();
                     }
                 } else {
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        addFilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        addFilmCountriesStatement.setString(2, country.getCountry());
-                        addFilmCountriesStatement.addBatch();
+                        FilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        FilmCountriesStatement.setString(2, country.getCountry());
+                        FilmCountriesStatement.addBatch();
                     }
                 }
             }
 
-            addFilmCountriesStatement.executeBatch();
-            updateFilmCountriesStatement.executeBatch();
+            FilmCountriesStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {
