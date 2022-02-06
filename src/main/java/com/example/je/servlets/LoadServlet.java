@@ -1,5 +1,6 @@
 package com.example.je.servlets;
 
+import com.example.je.RegularJob;
 import com.example.je.model.Film;
 import com.example.je.model.FilmCountryGenre;
 import com.example.je.model.FullFilm;
@@ -7,13 +8,26 @@ import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
 import com.example.je.services.GenreService;
 import com.google.gson.GsonBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class LoadServlet extends HttpServlet {
 
@@ -48,5 +62,34 @@ public class LoadServlet extends HttpServlet {
                 resp.getWriter().write("No film with such Id");
             }
         }
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        String key = "org.quartz.impl.StdSchedulerFactory.KEY";
+        ServletContext servletContext = config.getServletContext();
+        StdSchedulerFactory factory = (StdSchedulerFactory) servletContext.getAttribute(key);
+        try {
+            Scheduler quartzScheduler = factory.getScheduler("MyQuartzScheduler");
+            scheduleMainJob(quartzScheduler);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void scheduleMainJob(Scheduler scheduler) throws SchedulerException {
+        requireNonNull(scheduler);
+
+        JobDetail jobDetail = newJob(RegularJob.class).storeDurably()
+                .withIdentity("MAIN_JOB")
+                .withDescription("Main Job to Perform")
+                .build();
+        Trigger trigger = newTrigger().forJob(jobDetail)
+                .withIdentity("MAIN_JOB_TRIGG")
+                .withDescription("Trigger for Main Job")
+                .withSchedule(simpleSchedule().withIntervalInSeconds(30).repeatForever())
+                .startNow().build();
+
+        scheduler.scheduleJob(jobDetail, trigger);
     }
 }
