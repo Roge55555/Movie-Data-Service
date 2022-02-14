@@ -1,5 +1,6 @@
 package com.example.je.services;
 
+import com.example.je.Utils;
 import com.example.je.dao.FilmDAO;
 import com.example.je.dao.FullFilmDAO;
 import com.example.je.model.Film;
@@ -121,6 +122,10 @@ public class FilmService {
     }
 
     public List<FilmCountryGenre> saveFilms(List<Film> films) {
+        for (Film film : films) {
+            Utils.saveImage(film.getPosterUrl(), film.getNameRu().replaceAll(" ", ""));
+            Utils.saveImage(film.getPosterUrlPreview(), film.getNameRu().replaceAll(" ", "") + "_preview");
+        }
         return filmDAO.saveAllFilms(films);
     }
 
