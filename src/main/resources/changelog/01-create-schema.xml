@@ -96,7 +96,7 @@
             <column name="rating_rf_critics" type="double">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column name="rating_rf_criticsVoteCount" type="bigint">
+            <column name="rating_rf_critics_vote_count" type="bigint">
                 <constraints nullable="true" unique="false"/>
             </column>
             <column name="web_url" type="varchar(255)">
