@@ -8,10 +8,7 @@ import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
 import com.example.je.services.GenreService;
 import com.google.gson.GsonBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
 import javax.servlet.ServletConfig;
@@ -21,6 +18,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +32,9 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class LoadServlet extends HttpServlet {
 
     private final FilmService filmService = FilmService.getService();
+
     private final CountryService countryService = CountryService.getService();
+
     private final GenreService genreService = GenreService.getService();
 
     @Override
@@ -80,6 +82,12 @@ public class LoadServlet extends HttpServlet {
     private void scheduleMainJob(Scheduler scheduler) throws SchedulerException {
         requireNonNull(scheduler);
 
+//        try {
+//            Thread.sleep(30000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         JobDetail jobDetail = newJob(RegularJob.class).storeDurably()
                 .withIdentity("MAIN_JOB")
                 .withDescription("Main Job to Perform")
@@ -87,8 +95,8 @@ public class LoadServlet extends HttpServlet {
         Trigger trigger = newTrigger().forJob(jobDetail)
                 .withIdentity("MAIN_JOB_TRIGG")
                 .withDescription("Trigger for Main Job")
-                .withSchedule(simpleSchedule().withIntervalInSeconds(30).repeatForever())
-                .startNow().build();
+                .withSchedule(simpleSchedule().withIntervalInSeconds(60).repeatForever())
+                .startAt(Date.from(Instant.now().plus(3, ChronoUnit.MINUTES))).build();
 
         scheduler.scheduleJob(jobDetail, trigger);
     }

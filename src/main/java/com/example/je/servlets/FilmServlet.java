@@ -1,22 +1,15 @@
 package com.example.je.servlets;
 
 import com.example.je.model.Film;
-import com.example.je.model.FilmCountryGenre;
-import com.example.je.model.Page;
 import com.example.je.services.CountryService;
 import com.example.je.services.FilmService;
 import com.example.je.services.GenreService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
