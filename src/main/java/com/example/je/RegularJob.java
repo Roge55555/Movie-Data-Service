@@ -8,7 +8,6 @@ import com.example.je.services.FilmService;
 import com.example.je.services.GenreService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class RegularJob implements Job {
 
         for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
             FullFilm fullFilm = filmService.loadFullFilm(filmCountryGenre.getFilmId());
-            filmService.saveFilms(fullFilm);
+            filmService.saveFullFilm(fullFilm);
         }
 
         System.out.println("Done executing job.");
