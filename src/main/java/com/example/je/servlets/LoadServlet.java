@@ -48,7 +48,7 @@ public class LoadServlet extends HttpServlet {
         } else {
 
             FullFilm fullFilm = filmService.loadFullFilm(Long.decode(req.getHttpServletMapping().getMatchValue()));
-            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFilms(fullFilm);
+            List<FilmCountryGenre> filmCountryGenreList = filmService.saveFullFilm(fullFilm);
             countryService.saveCountry(filmCountryGenreList);
             genreService.saveGenre(filmCountryGenreList);
 
