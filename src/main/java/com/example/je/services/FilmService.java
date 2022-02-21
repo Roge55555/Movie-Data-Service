@@ -25,6 +25,10 @@ public class FilmService {
 
     private static FilmService filmService = null;
 
+    private final CountryService countryService = CountryService.getService();
+
+    private final GenreService genreService = GenreService.getService();
+
     private final PageService pageService;
 
     private final FilmDAO filmDAO;
@@ -93,6 +97,14 @@ public class FilmService {
     }
 
     public FullFilm loadFullFilm(Long id) {
+
+        if(Objects.isNull(getFilm(id))) {
+            List<Film> films = loadFilms();
+            List<FilmCountryGenre> filmCountryGenreList = saveFilms(films);
+            countryService.saveCountry(filmCountryGenreList);
+            genreService.saveGenre(filmCountryGenreList);
+        }
+
         Properties props = new Properties();
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = classloader.getResourceAsStream("application.properties");
