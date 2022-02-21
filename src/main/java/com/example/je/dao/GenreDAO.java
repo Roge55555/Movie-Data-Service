@@ -31,7 +31,7 @@ public class GenreDAO {
 
     public void saveAllGenres(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = factory.getConnection("mysql");
-             PreparedStatement FilmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM)) {
+             PreparedStatement filmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -40,20 +40,20 @@ public class GenreDAO {
                     deleteGenre(filmCountryGenre.getFilmId().intValue());
 
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        FilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        FilmGenresStatement.setString(2, genre.getGenre());
-                        FilmGenresStatement.addBatch();
+                        filmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmGenresStatement.setString(2, genre.getGenre());
+                        filmGenresStatement.addBatch();
                     }
                 } else {
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        FilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        FilmGenresStatement.setString(2, genre.getGenre());
-                        FilmGenresStatement.addBatch();
+                        filmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmGenresStatement.setString(2, genre.getGenre());
+                        filmGenresStatement.addBatch();
                     }
                 }
             }
 
-            FilmGenresStatement.executeBatch();
+            filmGenresStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {

@@ -31,7 +31,7 @@ public class CountryDAO {
 
     public void saveAllCountries(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = factory.getConnection("mysql");
-             PreparedStatement FilmCountriesStatement = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM)) {
+             PreparedStatement filmCountriesStatement = connection.prepareStatement(Queries.INSERT_COUNTRY_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -40,20 +40,20 @@ public class CountryDAO {
                     deleteCountry(filmCountryGenre.getFilmId().intValue());
 
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        FilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        FilmCountriesStatement.setString(2, country.getCountry());
-                        FilmCountriesStatement.addBatch();
+                        filmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmCountriesStatement.setString(2, country.getCountry());
+                        filmCountriesStatement.addBatch();
                     }
                 } else {
                     for (Country country : filmCountryGenre.getCountryList()) {
-                        FilmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        FilmCountriesStatement.setString(2, country.getCountry());
-                        FilmCountriesStatement.addBatch();
+                        filmCountriesStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmCountriesStatement.setString(2, country.getCountry());
+                        filmCountriesStatement.addBatch();
                     }
                 }
             }
 
-            FilmCountriesStatement.executeBatch();
+            filmCountriesStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {

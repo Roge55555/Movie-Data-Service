@@ -70,12 +70,12 @@ public class FilmService {
             pageNumber++;
 
             try {
-                URL urldemo = new URL(props.getProperty("kp.top250.url") + pageNumber);
+                URL urlDemo = new URL(props.getProperty("kp.top250.url") + pageNumber);
 
-                URLConnection yc = urldemo.openConnection();
-                yc.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
+                URLConnection urlConnection = urlDemo.openConnection();
+                urlConnection.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
                 String inputLine = in.readLine();
                 ObjectMapper mapper = new ObjectMapper();
                 page.setPagesCount(mapper.readValue(inputLine, Page.class).getPagesCount());
