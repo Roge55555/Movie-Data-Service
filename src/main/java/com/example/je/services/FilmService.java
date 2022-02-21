@@ -134,14 +134,21 @@ public class FilmService {
     }
 
     public List<FilmCountryGenre> saveFilms(List<Film> films) {
+
+        System.out.println("start download posters");
+
         for (Film film : films) {
-            Utils.saveImage(film.getPosterUrl(), film.getNameRu().replaceAll(" ", ""));
-            Utils.saveImage(film.getPosterUrlPreview(), film.getNameRu().replaceAll(" ", "") + "_preview");
+            Utils.saveImage(film.getPosterUrl(), film.getNameRu().replaceAll("[ /:*?|<>\"]", ""));
+            Utils.saveImage(film.getPosterUrlPreview(), film.getNameRu().replaceAll("[ /:*?|<>\"]", "") + "_preview");
+
         }
+
+        System.out.println("end download posters");
+
         return filmDAO.saveAllFilms(films);
     }
 
-    public List<FilmCountryGenre> saveFilms(FullFilm fullFilm) {
+    public List<FilmCountryGenre> saveFullFilm(FullFilm fullFilm) {
         return fullFilmDAO.saveFullFilm(fullFilm);
     }
 
