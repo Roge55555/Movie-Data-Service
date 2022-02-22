@@ -117,12 +117,12 @@ public class FilmService {
         }
 
         try {
-            URL urldemo = new URL(props.getProperty("kp.film.url") + id);
+            URL urlDemo = new URL(props.getProperty("kp.film.url") + id);
 
-            URLConnection yc = urldemo.openConnection();
-            yc.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
+            URLConnection urlConnection = urlDemo.openConnection();
+            urlConnection.setRequestProperty("X-API-KEY", props.getProperty("kp.key"));
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
             String inputLine = in.readLine();
             ObjectMapper mapper = new ObjectMapper();
             fullFilm = mapper.readValue(inputLine, FullFilm.class);
