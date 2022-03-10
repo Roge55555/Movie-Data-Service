@@ -1,0 +1,15 @@
+FROM maven:3.5-jdk-8 AS builder
+
+#WORKDIR /sevice/
+COPY pom.xml /home/pom.xml
+COPY src /home/src
+
+RUN mvn -f /home/pom.xml clean package
+
+FROM tomcat:9.0.21-jdk8-openjdk
+
+COPY --from=builder /home/target/JE-1.0.war /usr/local/tomcat/webapps/JE-1.0.war
+
+CMD ["catalina.sh", "run"]
+
+EXPOSE 8080
