@@ -82,12 +82,6 @@ public class LoadServlet extends HttpServlet {
     private void scheduleMainJob(Scheduler scheduler) throws SchedulerException {
         requireNonNull(scheduler);
 
-//        try {
-//            Thread.sleep(30000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
         JobDetail jobDetail = newJob(RegularJob.class).storeDurably()
                 .withIdentity("MAIN_JOB")
                 .withDescription("Main Job to Perform")
@@ -95,8 +89,8 @@ public class LoadServlet extends HttpServlet {
         Trigger trigger = newTrigger().forJob(jobDetail)
                 .withIdentity("MAIN_JOB_TRIGG")
                 .withDescription("Trigger for Main Job")
-                .withSchedule(simpleSchedule().withIntervalInSeconds(60).repeatForever())
-                .startAt(Date.from(Instant.now().plus(3, ChronoUnit.MINUTES))).build();
+                .withSchedule(simpleSchedule().withIntervalInHours(24).repeatForever())
+                .startAt(Date.from(Instant.now().plus(1, ChronoUnit.MINUTES))).build();
 
         scheduler.scheduleJob(jobDetail, trigger);
     }

@@ -13,11 +13,12 @@ public class Utils {
 
             BufferedImage bufferedImage = ImageIO.read(new URL(url));
 
-            ImageIO.write(bufferedImage, "jpg", new File("C:\\Users\\roge5\\Desktop\\img\\" + name + ".jpg"));
+            ImageIO.write(bufferedImage, "jpg", new File("/JE/img/" + name + ".jpg"));
 
         }
         catch (Exception e) {
             e.printStackTrace();
+            System.out.println(url + "/" + name);
         }
     }
 }

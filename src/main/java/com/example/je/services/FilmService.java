@@ -9,13 +9,12 @@ import com.example.je.model.FullFilm;
 import com.example.je.model.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -136,6 +135,12 @@ public class FilmService {
     public List<FilmCountryGenre> saveFilms(List<Film> films) {
 
         System.out.println("start download posters");
+
+        try {
+            Files.createDirectories(Paths.get("/JE/img"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         for (Film film : films) {
             Utils.saveImage(film.getPosterUrl(), film.getNameRu().replaceAll("[ /:*?|<>\"]", ""));
