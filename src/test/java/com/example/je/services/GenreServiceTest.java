@@ -6,10 +6,8 @@ import com.example.je.model.Genre;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GenreServiceTest {
@@ -47,7 +47,7 @@ class GenreServiceTest {
 
         genreService.saveGenre(filmCountryGenreList);
 
-        Mockito.verify(genreDAO, Mockito.times(1)).saveAllGenres(ArgumentMatchers.anyList());
+        verify(genreDAO, times(1)).saveAllGenres(anyList());
     }
 
     @Test
@@ -57,22 +57,22 @@ class GenreServiceTest {
         genreList.add(new Genre("криминал"));
         genreList.add(new Genre("комедия"));
 
-        Mockito.when(genreDAO.getGenre(ArgumentMatchers.anyInt())).thenReturn(genreList);
+        when(genreDAO.getGenre(anyInt())).thenReturn(genreList);
         List<Genre> getGenreList = genreService.get(54);
 
         assertEquals(2, getGenreList.size());
-        Mockito.verify(genreDAO, Mockito.times(1)).getGenre(ArgumentMatchers.anyInt());
+        verify(genreDAO, times(1)).getGenre(anyInt());
     }
 
     @Test
     @DisplayName("Get null cause no genres connected to such film id")
     void getEmptyList() {
         List<Genre> genreList = new ArrayList<>();
-        Mockito.when(genreDAO.getGenre(ArgumentMatchers.anyInt())).thenReturn(genreList);
+        when(genreDAO.getGenre(anyInt())).thenReturn(genreList);
         List<Genre> getGenreList = genreService.get(654);
 
         assertNull(getGenreList);
-        Mockito.verify(genreDAO, Mockito.times(1)).getGenre(ArgumentMatchers.anyInt());
+        verify(genreDAO, times(1)).getGenre(anyInt());
     }
 
     @Test
@@ -80,6 +80,6 @@ class GenreServiceTest {
     void delete() {
         genreService.delete(5619);
 
-        Mockito.verify(genreDAO, Mockito.times(1)).deleteGenre(ArgumentMatchers.anyInt());
+        verify(genreDAO, times(1)).deleteGenre(anyInt());
     }
 }

@@ -6,10 +6,8 @@ import com.example.je.model.FilmCountryGenre;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CountryServiceTest {
@@ -47,7 +47,7 @@ class CountryServiceTest {
 
         countryService.saveCountry(filmCountryGenreList);
 
-        Mockito.verify(countryDAO, Mockito.times(1)).saveAllCountries(ArgumentMatchers.anyList());
+        verify(countryDAO, times(1)).saveAllCountries(anyList());
     }
 
     @Test
@@ -57,22 +57,22 @@ class CountryServiceTest {
         countryList.add(new Country("США"));
         countryList.add(new Country("Новая Зеландия"));
 
-        Mockito.when(countryDAO.getCountry(ArgumentMatchers.anyInt())).thenReturn(countryList);
+        when(countryDAO.getCountry(anyInt())).thenReturn(countryList);
         List<Country> getCountryList = countryService.get(34444);
 
         assertEquals(2, getCountryList.size());
-        Mockito.verify(countryDAO, Mockito.times(1)).getCountry(ArgumentMatchers.anyInt());
+        verify(countryDAO, times(1)).getCountry(anyInt());
     }
 
     @Test
     @DisplayName("Get null cause no countries connected to such film id")
     void getEmptyList() {
         List<Country> countryList = new ArrayList<>();
-        Mockito.when(countryDAO.getCountry(ArgumentMatchers.anyInt())).thenReturn(countryList);
+        when(countryDAO.getCountry(anyInt())).thenReturn(countryList);
         List<Country> getCountryList = countryService.get(8676);
 
         assertNull(getCountryList);
-        Mockito.verify(countryDAO, Mockito.times(1)).getCountry(ArgumentMatchers.anyInt());
+        verify(countryDAO, times(1)).getCountry(anyInt());
     }
 
     @Test
@@ -80,6 +80,6 @@ class CountryServiceTest {
     void delete() {
         countryService.delete(688);
 
-        Mockito.verify(countryDAO, Mockito.times(1)).deleteCountry(ArgumentMatchers.anyInt());
+        verify(countryDAO, times(1)).deleteCountry(anyInt());
     }
 }

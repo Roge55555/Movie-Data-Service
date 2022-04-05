@@ -31,8 +31,7 @@ public class GenreDAO {
 
     public void saveAllGenres(List<FilmCountryGenre> filmCountryGenreList) {
         try (Connection connection = factory.getConnection("mysql");
-             PreparedStatement addFilmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM);
-             PreparedStatement updateFilmGenresStatement = connection.prepareStatement(Queries.UPDATE_GENRE_IN_FILM)) {
+             PreparedStatement filmGenresStatement = connection.prepareStatement(Queries.INSERT_GENRE_IN_FILM)) {
 
             connection.setAutoCommit(false);
             for (FilmCountryGenre filmCountryGenre : filmCountryGenreList) {
@@ -41,21 +40,20 @@ public class GenreDAO {
                     deleteGenre(filmCountryGenre.getFilmId().intValue());
 
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        updateFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        updateFilmGenresStatement.setString(2, genre.getGenre());
-                        updateFilmGenresStatement.addBatch();
+                        filmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmGenresStatement.setString(2, genre.getGenre());
+                        filmGenresStatement.addBatch();
                     }
                 } else {
                     for (Genre genre : filmCountryGenre.getGenreList()) {
-                        addFilmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
-                        addFilmGenresStatement.setString(2, genre.getGenre());
-                        addFilmGenresStatement.addBatch();
+                        filmGenresStatement.setInt(1, filmCountryGenre.getFilmId().intValue());
+                        filmGenresStatement.setString(2, genre.getGenre());
+                        filmGenresStatement.addBatch();
                     }
                 }
             }
 
-            addFilmGenresStatement.executeBatch();
-            updateFilmGenresStatement.executeBatch();
+            filmGenresStatement.executeBatch();
             connection.commit();
 
         } catch (SQLException throwables) {

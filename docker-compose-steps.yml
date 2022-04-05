@@ -1,0 +1,42 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0.22
+    container_name: db
+    restart: always
+    volumes:
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./scripts/my.cnf:/etc/mysql/conf.d/mysqld.cnf
+      - ./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: kinopoiskdb
+      MYSQL_USER: kpuser
+      MYSQL_PASSWORD: kpuser
+    ports:
+      - 3307:3306
+    networks:
+      - mt-network
+#  maven:
+#    container_name: maven-container
+#    build:
+#      context: .
+#      dockerfile: Dockerfile_maven
+
+  tomcat:
+    container_name: tomcat-container
+    build:
+      context: .
+      dockerfile: Dockerfile_tomcat
+    ports:
+      - "8079:8080"
+    networks:
+      - mt-network
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:mysql://db:3306/kinopoiskdb
+
+networks:
+  mt-network:
+    driver: bridge
